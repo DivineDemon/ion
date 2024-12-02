@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SignOutButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { ArrowRight } from "lucide-react";
+import { Atom } from "lucide-react";
 
 import MaxWidthWrapper from "@/components/max-width-wrapper";
 
@@ -15,11 +16,8 @@ const Navbar = async () => {
     <nav className="sticky inset-x-0 top-0 z-[100] h-16 w-full border-b border-gray-200 bg-white/80 backdrop-blur-lg transition-all">
       <MaxWidthWrapper>
         <div className="flex h-16 items-center justify-between">
-          <Link
-            href="/"
-            className="z-40 flex h-10 w-12 items-end justify-end rounded-md bg-primary pb-0.5 pr-1.5 font-semibold text-white"
-          >
-            m<span className="mb-2 text-[10px]">2</span>
+          <Link href="/" className="z-40 size-7 text-primary">
+            <Atom className="size-full" />
           </Link>
           <div className="flex h-full items-center space-x-4">
             {user ? (
@@ -41,15 +39,6 @@ const Navbar = async () => {
               </>
             ) : (
               <>
-                <Link
-                  href="/pricing"
-                  className={buttonVariants({
-                    size: "sm",
-                    variant: "ghost",
-                  })}
-                >
-                  Pricing
-                </Link>
                 <Link
                   href="/sign-in"
                   className={buttonVariants({
