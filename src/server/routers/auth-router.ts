@@ -26,6 +26,10 @@ export const authRouter = router({
         data: {
           email: auth.emailAddresses[0].emailAddress,
           externalId: auth.id,
+          firstName: `${auth.firstName}`,
+          lastName: `${auth.lastName}`,
+          image: auth.imageUrl,
+          username: `${auth.firstName?.toLowerCase()}_${auth.lastName?.toLowerCase()}`,
         },
       });
 
