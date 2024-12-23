@@ -18,28 +18,20 @@ const Sidebar = ({ onClose }: { onClose?: () => void }) => {
 
       <div className="flex-grow">
         <ul>
-          {SIDEBAR_ITEMS.map(({ category, items }) => (
-            <li key={category} className="mb-4 md:mb-8">
-              <p className="text-xs font-medium leading-6 text-zinc-500">
-                {category}
-              </p>
-              <div className="-mx-2 flex flex-1 flex-col">
-                {items.map((item, i) => (
-                  <Link
-                    key={i}
-                    href={item.href}
-                    className={cn(
-                      buttonVariants({ variant: "ghost" }),
-                      "group flex w-full items-center justify-start gap-x-2.5 rounded-md px-2 py-1.5 text-sm font-medium leading-6 text-zinc-700 transition hover:bg-red-50"
-                    )}
-                    onClick={onClose}
-                  >
-                    <item.icon className="size-4 text-zinc-500 group-hover:text-primary" />
-                    {item.text}
-                  </Link>
-                ))}
-              </div>
-            </li>
+          {SIDEBAR_ITEMS.map((item, idx) => (
+            <div key={idx} className="-mx-2 flex flex-1 flex-col">
+              <Link
+                href={item.href}
+                className={cn(
+                  buttonVariants({ variant: "ghost" }),
+                  "group flex w-full items-center justify-start gap-x-2.5 rounded-md px-2 py-1.5 text-sm font-medium leading-6 text-zinc-700 transition hover:bg-red-50"
+                )}
+                onClick={onClose}
+              >
+                <item.icon className="size-4 text-zinc-500 group-hover:text-primary" />
+                {item.text}
+              </Link>
+            </div>
           ))}
         </ul>
       </div>
