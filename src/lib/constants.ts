@@ -1,4 +1,12 @@
-import { Gem, Home, Key, LucideIcon, Settings } from "lucide-react";
+import {
+  CalendarCheck,
+  Gem,
+  Home,
+  Key,
+  LucideIcon,
+  Settings,
+  UsersRound,
+} from "lucide-react";
 
 interface SidebarItem {
   href: string;
@@ -14,7 +22,11 @@ interface SidebarCategory {
 export const SIDEBAR_ITEMS: SidebarCategory[] = [
   {
     category: "Overview",
-    items: [{ href: "/dashboard", icon: Home, text: "Dashboard" }],
+    items: [
+      { href: "/dashboard", icon: Home, text: "Dashboard" },
+      { href: "/meetings", icon: UsersRound, text: "Meetings" },
+      { href: "/availability", icon: CalendarCheck, text: "Availability" },
+    ],
   },
   {
     category: "Account",

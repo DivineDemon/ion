@@ -4,6 +4,8 @@ import { cors } from "hono/cors";
 import { handle } from "hono/vercel";
 
 import { authRouter } from "./routers/auth-router";
+import { nylasRouter } from "./routers/nylas-router";
+import { userRouter } from "./routers/user-router";
 
 /**
  * Initializing our Hono app
@@ -18,7 +20,10 @@ const app = new Hono().basePath("/api").use(cors());
  *
  * All routers added in /server/routers should be manually added here.
  */
-const appRouter = app.route("/auth", authRouter);
+const appRouter = app
+  .route("/auth", authRouter)
+  .route("/nylas", nylasRouter)
+  .route("/user", userRouter);
 
 /**
  * The handler Next.js uses to answer API requests

@@ -16,6 +16,8 @@ model User {
   lastName   String
   image      String
   username   String   @unique
+  grantId    String?
+  grantEmail String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

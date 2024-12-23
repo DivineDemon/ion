@@ -1,5 +1,12 @@
+import NylasAuthModal from "@/components/nylas-auth-modal";
+
 const Page = () => {
-  return <div>Dashboard</div>;
+  return (
+    <>
+      <NylasAuthModal />
+      <div className="">Dashboard</div>
+    </>
+  );
 };
 
 export default Page;
