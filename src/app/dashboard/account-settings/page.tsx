@@ -60,12 +60,6 @@ const Page = () => {
 
   const form = useForm<z.infer<typeof EditSchema>>({
     resolver: zodResolver(EditSchema),
-    defaultValues: {
-      firstName: data?.user.firstName,
-      lastName: data?.user.lastName,
-      username: data?.user.username,
-      email: data?.user.email,
-    },
   });
 
   const onSubmit = (data: z.infer<typeof EditSchema>) => {

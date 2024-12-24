@@ -8,18 +8,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Day {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
 model User {
-  id         String   @id @default(cuid())
-  externalId String?  @unique
-  email      String   @unique
-  firstName  String
-  lastName   String
-  image      String
-  username   String   @unique
-  grantId    String?
-  grantEmail String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id           String         @id @default(cuid())
+  externalId   String?        @unique
+  email        String         @unique
+  firstName    String
+  lastName     String
+  image        String
+  username     String         @unique
+  grantId      String?
+  grantEmail   String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  availability Availability[]
 
   @@index([email, username])
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  day       Day
+  fromTime  String
+  tillTime  String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 }

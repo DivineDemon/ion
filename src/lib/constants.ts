@@ -15,8 +15,12 @@ interface SidebarItem {
 
 export const SIDEBAR_ITEMS: SidebarItem[] = [
   { href: "/dashboard", icon: Home, text: "Dashboard" },
-  { href: "/meetings", icon: UsersRound, text: "Meetings" },
-  { href: "/availability", icon: CalendarCheck, text: "Availability" },
+  { href: "/dashboard/meetings", icon: UsersRound, text: "Meetings" },
+  {
+    href: "/dashboard/availability",
+    icon: CalendarCheck,
+    text: "Availability",
+  },
   { href: "/dashboard/upgrade", icon: Gem, text: "Upgrade" },
   {
     href: "/dashboard/account-settings",
