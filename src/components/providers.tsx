@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-query";
 import { HTTPException } from "hono/http-exception";
 
+import { Toaster } from "./ui/sonner";
+
 export const Providers = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(
     () =>
@@ -30,6 +32,15 @@ export const Providers = ({ children }: PropsWithChildren) => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <Toaster
+        toastOptions={{
+          style: {
+            backgroundColor: "transparent",
+          },
+        }}
+      />
+      {children}
+    </QueryClientProvider>
   );
 };

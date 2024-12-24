@@ -1,21 +1,14 @@
-import { currentUser } from "@clerk/nextjs/server";
-
 import { db } from "@/db";
+import { userValidator } from "@/lib/validators";
 
 import { router } from "../__internals/router";
-import { publicProcedure } from "../procedures";
+import { privateProcedure } from "../procedures";
 
 export const userRouter = router({
-  getDatabaseUser: publicProcedure.query(async ({ c }) => {
-    const auth = await currentUser();
-
-    if (!auth) {
-      throw new Error("User not Authenticated!");
-    }
-
+  getDatabaseUser: privateProcedure.query(async ({ c, ctx }) => {
     const user = await db.user.findUnique({
       where: {
-        externalId: auth.id,
+        externalId: ctx.user.externalId!,
       },
     });
 
@@ -27,4 +20,20 @@ export const userRouter = router({
       user,
     });
   }),
+  updateUser: privateProcedure
+    .input(userValidator)
+    .mutation(async ({ c, ctx, input }) => {
+      await db.user.update({
+        where: {
+          externalId: ctx.user.externalId!,
+        },
+        data: {
+          ...input,
+        },
+      });
+
+      return c.json({
+        success: true,
+      });
+    }),
 });

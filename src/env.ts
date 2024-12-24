@@ -30,6 +30,12 @@ export const env = createEnv({
         message: "Invalid NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY format",
       }),
     NEXT_PUBLIC_APP_URL: z.string(),
+    NEXT_PUBLIC_IMGBB_API_KEY: z
+      .string()
+      .regex(
+        /^[a-z0-9]{32}$/i,
+        "Invalid API key format. It must be 32 alphanumeric characters."
+      ),
   },
   runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -42,6 +48,7 @@ export const env = createEnv({
     NYLAS_API_KEY: process.env.NYLAS_API_KEY,
     NYLAS_API_URL: process.env.NYLAS_API_URL,
     NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
+    NEXT_PUBLIC_IMGBB_API_KEY: process.env.NEXT_PUBLIC_IMGBB_API_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
