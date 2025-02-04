@@ -1,8 +1,8 @@
 import { type Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 
+import "@/assets/css/globals.css";
 import { cn } from "@/lib/utils";
-import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 
 const dmSans = DM_Sans({
