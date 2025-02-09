@@ -23,7 +23,7 @@ const AppSidebar = () => {
     <Sidebar>
       <SidebarContent className="flex w-full flex-col items-center justify-start">
         <SidebarMenu className="gap-0 space-y-0">
-          <div className="flex w-full items-center justify-start border-b border-gray-300 px-5 py-2.5">
+          <div className="flex w-full items-center justify-start border-b px-5 py-2.5">
             <Atom className="size-7 text-primary" />
           </div>
           <div className="flex w-full flex-col items-center justify-start gap-2.5 p-2.5">

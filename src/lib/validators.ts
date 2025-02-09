@@ -1,9 +1,10 @@
 import { string, z } from "zod";
 
 export const userSchema = z.object({
-  id: z.string(),
+  lastName: z.string(),
+  firstName: z.string(),
   email: z.string().email(),
-  lastName: z.string().optional(),
+  id: z.string().optional(),
   imageUrl: z.string().optional(),
-  firstName: z.string().optional(),
+  userName: z.string().optional(),
 });

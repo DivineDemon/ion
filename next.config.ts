@@ -24,6 +24,10 @@ const config = {
         protocol: "https",
         hostname: "ui.shadcn.com",
       },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+      },
     ],
   },
   experimental: {

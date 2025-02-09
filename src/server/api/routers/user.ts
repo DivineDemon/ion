@@ -34,4 +34,26 @@ export const userRouter = createTRPCRouter({
       },
     });
   }),
+  updateUser: privateProcedure
+    .input(userSchema)
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.db.user.update({
+        where: {
+          id: ctx.user.id,
+        },
+        data: {
+          ...input,
+        },
+      });
+    }),
+  fetchUserLinkedAccounts: privateProcedure.query(async ({ ctx }) => {
+    return await ctx.db.user.findUnique({
+      where: {
+        id: ctx.user.id,
+      },
+      select: {
+        grantEmail: true,
+      },
+    });
+  }),
 });

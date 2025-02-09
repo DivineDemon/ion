@@ -1,11 +1,16 @@
-import { Home, Key, Settings } from "lucide-react";
+import { CalendarCheck2, Home, Key, Settings, UsersRound } from "lucide-react";
 
 export const SIDEBAR_ITEMS = [
   { href: "/dashboard", icon: Home, text: "Dashboard" },
-  { href: "/dashboard/api-key", icon: Key, text: "API Key" },
+  { href: "/dashboard/meetings", icon: UsersRound, text: "Meetings" },
   {
-    href: "/dashboard/account-settings",
+    href: "/dashboard/availability",
+    icon: CalendarCheck2,
+    text: "Availability",
+  },
+  {
+    href: "/dashboard/settings",
     icon: Settings,
-    text: "Account Settings",
+    text: "Settings",
   },
 ];

@@ -22,6 +22,7 @@ export const env = createEnv({
     NEXT_PUBLIC_KINDE_GITHUB_CONNECTION_ID: z.string().min(1),
     NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID: z.string().min(1),
     NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_IMGBB_KEY: z.string(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -42,6 +43,7 @@ export const env = createEnv({
     NYLAS_API_URI: process.env.NYLAS_API_URI,
     NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_IMGBB_KEY: process.env.NEXT_PUBLIC_IMGBB_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,

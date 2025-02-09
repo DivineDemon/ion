@@ -37,8 +37,12 @@ export async function GET(req: NextRequest) {
         id: user.id,
       },
       data: {
-        grantId,
-        grantEmail: email,
+        grantId: {
+          push: grantId,
+        },
+        grantEmail: {
+          push: email,
+        },
       },
     });
   } catch (error: Error | unknown) {
