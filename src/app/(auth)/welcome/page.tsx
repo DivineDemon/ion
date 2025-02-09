@@ -30,7 +30,7 @@ const Page = async () => {
   });
 
   if (response) {
-    redirect("/dashboard");
+    redirect("/api/auth");
   }
 
   return (
@@ -40,7 +40,8 @@ const Page = async () => {
         <LoadingSpinner />
         <Heading>Creating your Account...</Heading>
         <p className="max-w-prose text-base/7 text-gray-600">
-          Just a moment while we set things up for you.
+          Just a moment while we set things up for you. You will be asked to
+          authenticate your email for access to your Calendar.
         </p>
       </div>
     </div>

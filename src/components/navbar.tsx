@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Atom } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ const Navbar = async () => {
       <MaxWidthWrapper>
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="z-40 flex font-semibold">
-            <span className="text-primary">Ion</span>
+            <Atom className="size-6 text-primary" />
           </Link>
           <div className="flex h-full items-center space-x-4">
             {user ? (

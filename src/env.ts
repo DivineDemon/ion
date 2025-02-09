@@ -13,11 +13,15 @@ export const env = createEnv({
     KINDE_CLIENT_SECRET: z.string().min(1),
     KINDE_POST_LOGIN_REDIRECT_URL: z.string().url(),
     KINDE_POST_LOGOUT_REDIRECT_URL: z.string().url(),
+    NYLAS_API_SECRET_KEY: z.string(),
+    NYLAS_API_URI: z.string().url(),
+    NYLAS_CLIENT_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_KINDE_EMAIL_CONNECTION_ID: z.string().min(1),
     NEXT_PUBLIC_KINDE_GITHUB_CONNECTION_ID: z.string().min(1),
     NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID: z.string().min(1),
+    NEXT_PUBLIC_APP_URL: z.string().url(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -34,6 +38,10 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_KINDE_GITHUB_CONNECTION_ID,
     NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID:
       process.env.NEXT_PUBLIC_KINDE_GOOGLE_CONNECTION_ID,
+    NYLAS_API_SECRET_KEY: process.env.NYLAS_API_SECRET_KEY,
+    NYLAS_API_URI: process.env.NYLAS_API_URI,
+    NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,
