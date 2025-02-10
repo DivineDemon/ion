@@ -48,6 +48,12 @@ const Page = () => {
 
   const form = useForm<z.infer<typeof userFormSchema>>({
     resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      email: "",
+      lastName: "",
+      userName: "",
+      firstName: "",
+    },
   });
 
   const triggerUpload = () => {
