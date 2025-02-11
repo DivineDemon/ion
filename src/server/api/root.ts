@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 
 import { availabilityRouter } from "./routers/availability";
+import { eventRouter } from "./routers/event";
 import { userRouter } from "./routers/user";
 
 /**
@@ -10,6 +11,7 @@ import { userRouter } from "./routers/user";
  */
 export const appRouter = createTRPCRouter({
   user: userRouter,
+  event: eventRouter,
   availability: availabilityRouter,
 });
 
