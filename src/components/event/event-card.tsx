@@ -69,24 +69,29 @@ const EventCard = ({ data }: EventCardProps) => {
   };
 
   const handleToggle = async () => {
-    const newState = !optimisticEventType.active;
-
     startTransition(() => {
-      toggleOptimisticEventType(newState);
+      toggleOptimisticEventType(!optimisticEventType.active);
     });
 
     try {
-      const response = await toggleEventTypeAction(data.id, newState);
+      const response = await toggleEventTypeAction(
+        data.id,
+        !optimisticEventType.active
+      );
 
       if (!response.success) {
         toast.error("Failed to Toggle Event!");
-        startTransition(() => toggleOptimisticEventType(!newState));
+        startTransition(() =>
+          toggleOptimisticEventType(optimisticEventType.active)
+        );
       } else {
         toast.success("Successfully Toggled Event!");
       }
     } catch (error: Error | unknown) {
       toast.error((error as Error).message);
-      startTransition(() => toggleOptimisticEventType(!newState));
+      startTransition(() =>
+        toggleOptimisticEventType(optimisticEventType.active)
+      );
     }
   };
 
