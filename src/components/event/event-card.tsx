@@ -2,20 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { startTransition, useOptimistic, useState } from "react";
 
-import { Link2, Loader2, Trash } from "lucide-react";
+import {
+  EllipsisVertical,
+  ExternalLink,
+  Link2,
+  Pen,
+  Trash,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import { deleteEventTypeAction } from "@/app/(server-actions)/delete-event-type";
+import { toggleEventTypeAction } from "@/app/(server-actions)/toggle-event-type";
 import GoogleMeet from "@/assets/img/meet.svg";
 import Teams from "@/assets/img/teams.svg";
 import Zoom from "@/assets/img/zoom.svg";
 import { env } from "@/env";
-import useRefetch from "@/hooks/use-refetch";
-import { cn } from "@/lib/utils";
-import { api } from "@/trpc/react";
+import { copyToClipboard } from "@/lib/utils";
 
-import { Button, buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Switch } from "../ui/switch";
+import EditEventModal from "./edit-event-modal";
 
 interface EventCardProps {
   data: {
@@ -33,85 +50,141 @@ interface EventCardProps {
 }
 
 const EventCard = ({ data }: EventCardProps) => {
-  const refetch = useRefetch();
-  const deleteEvent = api.event.deleteEventType.useMutation();
+  const [edit, setEdit] = useState<boolean>(false);
+  const [optimisticEventType, toggleOptimisticEventType] = useOptimistic(
+    data,
+    (state, newState: boolean) => {
+      return { ...state, active: newState };
+    }
+  );
 
-  const handleDelete = (id: string) => {
-    deleteEvent.mutate(
-      {
-        eventId: id,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Successfully Deleted Event!");
-          refetch();
-        },
-        onError: () => {
-          toast.error("Failed to Delete Event!");
-        },
+  const handleDelete = async (id: string) => {
+    const response = await deleteEventTypeAction(id);
+
+    if (response.success) {
+      toast.success("Successfully Deleted Event!");
+    } else {
+      toast.error("Failed to Delete Event!");
+    }
+  };
+
+  const handleToggle = async () => {
+    const newState = !optimisticEventType.active;
+
+    startTransition(() => {
+      toggleOptimisticEventType(newState);
+    });
+
+    try {
+      const response = await toggleEventTypeAction(data.id, newState);
+
+      if (!response.success) {
+        toast.error("Failed to Toggle Event!");
+        startTransition(() => toggleOptimisticEventType(!newState));
+      } else {
+        toast.success("Successfully Toggled Event!");
       }
-    );
+    } catch (error: Error | unknown) {
+      toast.error((error as Error).message);
+      startTransition(() => toggleOptimisticEventType(!newState));
+    }
   };
 
   return (
-    <div className="col-span-1 flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border">
-      <div className="flex w-full items-center justify-center gap-5 bg-sidebar p-2.5">
-        <Image
-          src={
-            data.videoCallSoftware === "Google Meet"
-              ? GoogleMeet
-              : data.videoCallSoftware === "Zoom Meeting"
-                ? Zoom
-                : Teams
-          }
-          alt="meeting-service-icon"
-          width={40}
-          height={40}
-          className="size-10 shrink-0"
-        />
-        <div className="flex w-full flex-col items-center justify-center">
-          <span className="w-full overflow-hidden truncate text-left font-semibold">
-            {data.title}
-          </span>
-          <span className="w-full text-left text-sm text-gray-500">
-            Scheduled for {data.duration} Minutes
+    <>
+      <EditEventModal
+        open={edit}
+        setOpen={setEdit}
+        id={optimisticEventType.id}
+      />
+      <div className="col-span-1 flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border">
+        <div className="flex w-full items-center justify-center gap-5 bg-sidebar p-2.5">
+          <Image
+            src={
+              optimisticEventType.videoCallSoftware === "Google Meet"
+                ? GoogleMeet
+                : optimisticEventType.videoCallSoftware === "Zoom Meeting"
+                  ? Zoom
+                  : Teams
+            }
+            alt="meeting-service-icon"
+            width={40}
+            height={40}
+            className="size-10 shrink-0"
+          />
+          <div className="flex w-full flex-col items-center justify-center">
+            <span className="w-full overflow-hidden truncate text-left font-semibold">
+              {optimisticEventType.title}
+            </span>
+            <span className="w-full text-left text-sm text-gray-500">
+              Scheduled for {optimisticEventType.duration} Minutes
+            </span>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button type="button" variant="outline" className="size-10">
+                <EllipsisVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-44" align="end">
+              <DropdownMenuLabel>Event Type</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem>
+                  <Link
+                    href={`${env.NEXT_PUBLIC_APP_URL}/${optimisticEventType.url}`}
+                    target="_blank"
+                    className="flex w-full items-center justify-start gap-4"
+                  >
+                    <ExternalLink className="size-4" />
+                    <span>Preview</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    copyToClipboard(
+                      `${env.NEXT_PUBLIC_APP_URL}/${optimisticEventType.url}`
+                    )
+                  }
+                >
+                  <Link2 />
+                  <span className="ml-2">Copy</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <div
+                    onClick={() => setEdit(true)}
+                    className="flex w-full items-center justify-start gap-4"
+                  >
+                    <Pen className="size-4" />
+                    <span>Edit</span>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="group"
+                  onClick={() => handleDelete(optimisticEventType.id)}
+                >
+                  <Trash className="transition-colors group-hover:text-destructive" />
+                  <span className="ml-2">Delete</span>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex w-full flex-col items-center justify-center p-2.5">
+          <span className="line-clamp-3 w-full text-left text-sm text-gray-500">
+            {optimisticEventType.description}
           </span>
         </div>
-        <Switch defaultChecked={data.active} className="shrink-0" />
+        <div className="flex w-full items-center justify-between gap-2.5 border-t p-2.5">
+          <Switch
+            className="shrink-0"
+            onCheckedChange={handleToggle}
+            defaultChecked={optimisticEventType.active}
+          />
+        </div>
       </div>
-      <div className="flex w-full flex-col items-center justify-center p-2.5">
-        <span className="line-clamp-3 w-full text-left text-sm text-gray-500">
-          {data.description}
-        </span>
-      </div>
-      <div className="flex w-full items-center justify-end gap-2.5 border-t p-2.5">
-        <Link
-          href={`${env.NEXT_PUBLIC_APP_URL}/${data.url}`}
-          className={cn(
-            buttonVariants({
-              variant: "outline",
-              size: "icon",
-            })
-          )}
-        >
-          <Link2 />
-        </Link>
-        <Button
-          type="button"
-          variant="destructive"
-          size="icon"
-          disabled={deleteEvent.isPending}
-          className="border-none"
-          onClick={() => handleDelete(data.id)}
-        >
-          {deleteEvent.isPending ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Trash />
-          )}
-        </Button>
-      </div>
-    </div>
+    </>
   );
 };
 

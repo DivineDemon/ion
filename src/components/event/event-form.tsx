@@ -6,10 +6,9 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
+import { createEventAction } from "@/app/(server-actions)/create-event-type";
 import { env } from "@/env";
-import useRefetch from "@/hooks/use-refetch";
 import { appointmentTypeSchema } from "@/lib/validators";
-import { api } from "@/trpc/react";
 
 import { Button } from "../ui/button";
 import { CardContent } from "../ui/card";
@@ -33,7 +32,6 @@ import {
 import { Textarea } from "../ui/textarea";
 
 const EventForm = () => {
-  const refetch = useRefetch();
   const form = useForm<z.infer<typeof appointmentTypeSchema>>({
     resolver: zodResolver(appointmentTypeSchema),
     defaultValues: {
@@ -44,21 +42,17 @@ const EventForm = () => {
       videoCallSoftware: "",
     },
   });
-  const createEvent = api.event.createEventType.useMutation();
 
-  const onSubmit = (values: z.infer<typeof appointmentTypeSchema>) => {
+  const onSubmit = async (values: z.infer<typeof appointmentTypeSchema>) => {
     try {
-      createEvent.mutate({
-        url: values.url,
-        title: values.title,
-        description: values.description,
-        duration: Number(values.duration),
-        videoCallSoftware: values.videoCallSoftware,
-      });
+      const response = await createEventAction(values);
 
-      toast.success("Event type created successfully!");
-      form.reset();
-      refetch();
+      if (response.success) {
+        toast.success("Event created successfully!");
+        form.reset();
+      } else {
+        toast.error("Something went wrong!");
+      }
     } catch (error) {
       toast.error("Something went wrong!");
     }
@@ -81,7 +75,7 @@ const EventForm = () => {
               </FormItem>
             )}
           />
-          <div className="col-span-1 flex w-full flex-col items-center justify-center gap-2">
+          <div className="col-span-1 flex w-full flex-col items-center justify-center gap-2.5 pt-[7px]">
             <Label
               htmlFor="url-slug"
               className="w-full text-left text-sm font-medium leading-none"
@@ -185,10 +179,10 @@ const EventForm = () => {
         <div className="flex w-full items-center justify-end px-5">
           <Button
             type="submit"
-            disabled={createEvent.isPending}
+            disabled={form.formState.isSubmitting}
             variant="default"
           >
-            {createEvent.isPending ? (
+            {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="animate-spin" /> Please Wait...
               </>

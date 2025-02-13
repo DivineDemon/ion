@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 import { env } from "@/env";
@@ -24,4 +25,13 @@ export async function parseImage(file: File) {
   } = await converted.json();
 
   return response.data.url;
+}
+
+export async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied Link to Clipboard!");
+  } catch (err) {
+    toast.success("Failed to copy text to clipboard");
+  }
 }

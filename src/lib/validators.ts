@@ -24,3 +24,12 @@ export const postAppointmentSchema = z.object({
   videoCallSoftware: z.string().min(3),
   description: z.string().min(3).max(300),
 });
+
+export const updateAppointmentSchema = z.object({
+  id: z.string(),
+  url: z.string().min(3).max(150),
+  title: z.string().min(3).max(150),
+  duration: z.number().min(15).max(60),
+  videoCallSoftware: z.string().min(3),
+  description: z.string().min(3).max(300),
+});

@@ -7,6 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id           String         @id @default(cuid())
+  imageUrl     String?
+  email        String         @unique
+  firstName    String?
+  lastName     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  userName     String?
+  grantEmail   String[]
+  grantId      String[]
+  availability Availability[]
+  eventType    EventType[]
+
+  @@index([email], map: "email_index")
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  day       Day
+  fromTime  String
+  tillTime  String
+  isActive  Boolean  @default(true)
+  userId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+
+  @@index([day], map: "day_index")
+}
+
+model EventType {
+  id                String   @id @default(uuid())
+  title             String
+  duration          Int
+  url               String
+  description       String
+  active            Boolean  @default(true)
+  videoCallSoftware String   @default("Google Meet")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String?
+  User              User?    @relation(fields: [userId], references: [id])
+
+  @@index([title], map: "title_index")
+}
+
 enum Day {
   Monday
   Tuesday
@@ -15,54 +62,4 @@ enum Day {
   Friday
   Saturday
   Sunday
-}
-
-model User {
-  id           String         @id @default(cuid())
-  imageUrl     String?
-  email        String         @unique
-  userName     String?
-  firstName    String?
-  lastName     String?
-  grantId      String[]
-  grantEmail   String[]
-  availability Availability[]
-  eventType    EventType[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([email], map: "email_index")
-}
-
-model Availability {
-  id       String  @id @default(cuid())
-  day      Day
-  fromTime String
-  tillTime String
-  isActive Boolean @default(true)
-  User     User?   @relation(fields: [userId], references: [id])
-  userId   String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([day], map: "day_index")
-}
-
-model EventType {
-  id                String  @id @default(uuid())
-  title             String
-  duration          Int
-  url               String
-  description       String
-  active            Boolean @default(true)
-  videoCallSoftware String  @default("Google Meet")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-
-  @@index([title], map: "title_index")
 }
