@@ -20,6 +20,7 @@ import Teams from "@/assets/img/teams.svg";
 import Zoom from "@/assets/img/zoom.svg";
 import { env } from "@/env";
 import { copyToClipboard } from "@/lib/utils";
+import { api } from "@/trpc/react";
 
 import { Button } from "../ui/button";
 import {
@@ -57,6 +58,8 @@ const EventCard = ({ data }: EventCardProps) => {
       return { ...state, active: newState };
     }
   );
+
+  const { data: user } = api.user.findUser.useQuery();
 
   const handleDelete = async (id: string) => {
     const response = await deleteEventTypeAction(id);
@@ -137,7 +140,7 @@ const EventCard = ({ data }: EventCardProps) => {
               <DropdownMenuGroup>
                 <DropdownMenuItem>
                   <Link
-                    href={`${env.NEXT_PUBLIC_APP_URL}/${optimisticEventType.url}`}
+                    href={`${env.NEXT_PUBLIC_APP_URL}/${user?.userName}/${optimisticEventType.url}`}
                     target="_blank"
                     className="flex w-full items-center justify-start gap-4"
                   >
@@ -148,7 +151,7 @@ const EventCard = ({ data }: EventCardProps) => {
                 <DropdownMenuItem
                   onClick={() =>
                     copyToClipboard(
-                      `${env.NEXT_PUBLIC_APP_URL}/${optimisticEventType.url}`
+                      `${env.NEXT_PUBLIC_APP_URL}/${user?.userName}/${optimisticEventType.url}`
                     )
                   }
                 >

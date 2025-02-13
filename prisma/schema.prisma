@@ -42,7 +42,7 @@ model EventType {
   id                String   @id @default(uuid())
   title             String
   duration          Int
-  url               String
+  url               String   @unique
   description       String
   active            Boolean  @default(true)
   videoCallSoftware String   @default("Google Meet")
