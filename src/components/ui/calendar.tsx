@@ -75,7 +75,7 @@ const CalendarCell = ({
               "bg-primary text-black": isSelected,
               "cursor-not-allowed text-muted-foreground": finallyIsDisabled,
               "hover:bg-primary/10": !isSelected && !finallyIsDisabled,
-              "bg-secondary": !finallyIsDisabled,
+              "bg-secondary": !isSelected && !finallyIsDisabled,
             }
           )}
         >

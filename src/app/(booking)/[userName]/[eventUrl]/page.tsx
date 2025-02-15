@@ -17,9 +17,11 @@ interface PageProps {
     userName: string;
     eventUrl: string;
   }>;
+  searchParams: Promise<{ date?: string }>;
 }
 
-const Page = async ({ params }: PageProps) => {
+const Page = async ({ params, searchParams }: PageProps) => {
+  const { date } = await searchParams;
   const { eventUrl, userName } = await params;
 
   const response = await db.eventType.findFirst({
@@ -85,7 +87,7 @@ const Page = async ({ params }: PageProps) => {
               <div className="flex w-full items-center justify-center gap-3">
                 <CalendarX2 className="size-4 text-primary" />
                 <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
-                  {dayjs(Date.now()).format("DD MMM, YYYY")}
+                  {dayjs(date).format("DD MMMM, YYYY")}
                 </span>
               </div>
               <div className="flex w-full items-center justify-center gap-3">
@@ -118,6 +120,7 @@ const Page = async ({ params }: PageProps) => {
           <div className="col-span-1 flex w-full items-center justify-center">
             <CustomCalendar availability={response.User?.availability!} />
           </div>
+          <Separator orientation="vertical" />
         </CardContent>
       </Card>
     </div>
