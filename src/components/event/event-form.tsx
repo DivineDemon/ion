@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { createEventAction } from "@/app/(server-actions)/create-event-type";
+import { createEventType } from "@/app/(server-actions)/create-event-type";
 import { env } from "@/env";
 import { appointmentTypeSchema } from "@/lib/validators";
 
@@ -45,7 +45,7 @@ const EventForm = () => {
 
   const onSubmit = async (values: z.infer<typeof appointmentTypeSchema>) => {
     try {
-      const response = await createEventAction(values);
+      const response = await createEventType(values);
 
       if (response.success) {
         toast.success("Event created successfully!");

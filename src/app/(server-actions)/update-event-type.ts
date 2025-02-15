@@ -8,7 +8,7 @@ import { z } from "zod";
 import { appointmentTypeSchema } from "@/lib/validators";
 import { db } from "@/server/db";
 
-export async function updateEventAction(
+export async function updateEventType(
   id: string,
   values: z.infer<typeof appointmentTypeSchema>
 ) {

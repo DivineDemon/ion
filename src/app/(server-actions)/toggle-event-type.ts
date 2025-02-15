@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { db } from "@/server/db";
 
-export async function toggleEventTypeAction(id: string, active: boolean) {
+export async function toggleEventType(id: string, active: boolean) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 

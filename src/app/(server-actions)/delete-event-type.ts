@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { db } from "@/server/db";
 
-export async function deleteEventTypeAction(eventId: string) {
+export async function deleteEventType(eventId: string) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 

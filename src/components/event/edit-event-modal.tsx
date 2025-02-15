@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { updateEventAction } from "@/app/(server-actions)/update-event-type";
+import { updateEventType } from "@/app/(server-actions)/update-event-type";
 import { env } from "@/env";
 import { appointmentTypeSchema } from "@/lib/validators";
 import { api } from "@/trpc/react";
@@ -67,7 +67,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
 
   const onSubmit = async (values: z.infer<typeof appointmentTypeSchema>) => {
     try {
-      const response = await updateEventAction(id, values);
+      const response = await updateEventType(id, values);
 
       if (response.success) {
         toast.success("Event updated successfully!");

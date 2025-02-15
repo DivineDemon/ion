@@ -13,8 +13,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { deleteEventTypeAction } from "@/app/(server-actions)/delete-event-type";
-import { toggleEventTypeAction } from "@/app/(server-actions)/toggle-event-type";
+import { deleteEventType } from "@/app/(server-actions)/delete-event-type";
+import { toggleEventType } from "@/app/(server-actions)/toggle-event-type";
 import GoogleMeet from "@/assets/img/meet.svg";
 import Teams from "@/assets/img/teams.svg";
 import Zoom from "@/assets/img/zoom.svg";
@@ -62,7 +62,7 @@ const EventCard = ({ data }: EventCardProps) => {
   const { data: user } = api.user.findUser.useQuery();
 
   const handleDelete = async (id: string) => {
-    const response = await deleteEventTypeAction(id);
+    const response = await deleteEventType(id);
 
     if (response.success) {
       toast.success("Successfully Deleted Event!");
@@ -77,7 +77,7 @@ const EventCard = ({ data }: EventCardProps) => {
     });
 
     try {
-      const response = await toggleEventTypeAction(
+      const response = await toggleEventType(
         data.id,
         !optimisticEventType.active
       );

@@ -8,7 +8,7 @@ import { z } from "zod";
 import { appointmentTypeSchema } from "@/lib/validators";
 import { db } from "@/server/db";
 
-export async function createEventAction(
+export async function createEventType(
   values: z.infer<typeof appointmentTypeSchema>
 ) {
   const { getUser } = getKindeServerSession();
