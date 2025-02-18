@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 
 import EventCard from "@/components/event/event-card";
 import EventForm from "@/components/event/event-form";
+import NotFound from "@/components/not-found";
 import {
   Card,
   CardDescription,
@@ -55,7 +56,10 @@ const Page = async () => {
       >
         {!data ? (
           <div className="col-span-2 flex h-full w-full items-center justify-center">
-            <Loader2 className="size-10 animate-spin text-primary" />
+            <NotFound
+              title="No Events Found!"
+              description="creating an event."
+            />
           </div>
         ) : (
           data?.map((event) => <EventCard key={event.id} data={event} />)

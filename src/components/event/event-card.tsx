@@ -105,7 +105,7 @@ const EventCard = ({ data }: EventCardProps) => {
         setOpen={setEdit}
         id={optimisticEventType.id}
       />
-      <div className="col-span-1 flex w-full flex-col items-start justify-start overflow-hidden rounded-lg border">
+      <div className="col-span-1 flex h-fit w-full flex-col items-start justify-start overflow-hidden rounded-lg border">
         <div className="flex w-full items-center justify-center gap-5 bg-sidebar p-2.5">
           <Image
             src={

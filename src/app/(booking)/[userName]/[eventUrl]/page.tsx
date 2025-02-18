@@ -4,12 +4,18 @@ import { notFound } from "next/navigation";
 import dayjs from "dayjs";
 import { CalendarX2, Clock } from "lucide-react";
 
+import { bookMeeting } from "@/app/(server-actions)/book-meeting";
 import GoogleMeet from "@/assets/img/meet.svg";
 import Teams from "@/assets/img/teams.svg";
 import Zoom from "@/assets/img/zoom.svg";
 import CustomCalendar from "@/components/booking/custom-calendar";
+import TimeTable from "@/components/booking/time-table";
+import SubmitButton from "@/components/submit-button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { db } from "@/server/db";
 
 interface PageProps {
@@ -17,11 +23,11 @@ interface PageProps {
     userName: string;
     eventUrl: string;
   }>;
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string; time?: string }>;
 }
 
 const Page = async ({ params, searchParams }: PageProps) => {
-  const { date } = await searchParams;
+  const { date, time } = await searchParams;
   const { eventUrl, userName } = await params;
 
   const response = await db.eventType.findFirst({
@@ -58,11 +64,18 @@ const Page = async ({ params, searchParams }: PageProps) => {
     return notFound();
   }
 
+  const showForm = !!date && !!time;
+
   return (
     <div className="flex h-full w-full items-center justify-center">
       <Card className="w-full">
-        <CardContent className="grid w-full grid-cols-[1fr,auto,1fr,auto,1fr,auto] gap-5 p-5">
-          <div className="col-span-1 flex w-full flex-col items-start justify-center gap-5 divide-y">
+        <CardContent
+          className={cn("grid w-full p-5", {
+            "grid-cols-[1fr,auto,1fr,auto,1fr,auto]": !showForm,
+            "grid-cols-[1fr,auto,1fr]": showForm,
+          })}
+        >
+          <div className="col-span-1 flex w-full flex-col items-start justify-center gap-5 divide-y pr-5">
             <div className="flex w-full flex-col items-start justify-start gap-2.5">
               <Image
                 src={response.User?.imageUrl as string}
@@ -87,7 +100,9 @@ const Page = async ({ params, searchParams }: PageProps) => {
               <div className="flex w-full items-center justify-center gap-3">
                 <CalendarX2 className="size-4 text-primary" />
                 <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
-                  {dayjs(date).format("DD MMMM, YYYY")}
+                  {date
+                    ? dayjs(date).format("DD MMMM, YYYY")
+                    : dayjs(new Date()).format("DD MMMM, YYYY")}
                 </span>
               </div>
               <div className="flex w-full items-center justify-center gap-3">
@@ -117,10 +132,71 @@ const Page = async ({ params, searchParams }: PageProps) => {
             </div>
           </div>
           <Separator orientation="vertical" />
-          <div className="col-span-1 flex w-full items-center justify-center">
-            <CustomCalendar availability={response.User?.availability!} />
-          </div>
-          <Separator orientation="vertical" />
+          {showForm ? (
+            <form
+              action={bookMeeting}
+              className="col-span-1 flex w-full flex-col items-start justify-start gap-5 pl-5"
+            >
+              <Input type="hidden" name="fromTime" value={time} />
+              <Input type="hidden" name="eventDate" value={date} />
+              <Input type="hidden" name="eventTypeId" value={response.id} />
+              <Input
+                type="hidden"
+                name="meetingLength"
+                value={response.duration}
+              />
+              <Input
+                type="hidden"
+                name="provider"
+                value={response.videoCallSoftware}
+              />
+              <div className="flex w-full flex-col items-center justify-center gap-2">
+                <Label
+                  htmlFor="name"
+                  className="w-full text-left text-sm font-medium"
+                >
+                  Name
+                </Label>
+                <Input
+                  className="w-full"
+                  id="name"
+                  type="text"
+                  name="name"
+                  placeholder="Your Name"
+                />
+              </div>
+              <div className="flex w-full flex-col items-center justify-center gap-2">
+                <Label
+                  htmlFor="email"
+                  className="w-full text-left text-sm font-medium"
+                >
+                  Email
+                </Label>
+                <Input
+                  className="w-full"
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="johndoe@email.com"
+                />
+              </div>
+              <SubmitButton text="Book Meeting" className="mt-auto w-full" />
+            </form>
+          ) : (
+            <>
+              <div className="col-span-1 flex w-full items-center justify-center px-5">
+                <CustomCalendar availability={response.User?.availability!} />
+              </div>
+              <Separator orientation="vertical" />
+              <div className="col-span-1 flex w-full items-center justify-center">
+                <TimeTable
+                  selectedDate={date ? new Date(date) : new Date()}
+                  duration={response.duration}
+                  time={time ?? ""}
+                />
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
