@@ -7,25 +7,35 @@ import { Button } from "./ui/button";
 
 const SubmitButton = ({
   text,
+  variant,
   className,
 }: {
   text: string;
   className?: string;
+  variant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
+    | null
+    | undefined;
 }) => {
   const { pending } = useFormStatus();
 
   return pending ? (
     <Button
       type="button"
-      variant="default"
       disabled={true}
+      variant={variant}
       className={className}
     >
       <Loader2 className="animate-spin" />
       <span>Please Wait...</span>
     </Button>
   ) : (
-    <Button type="submit" variant="default" className={className}>
+    <Button type="submit" variant={variant} className={className}>
       {text}
     </Button>
   );
