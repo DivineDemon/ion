@@ -14,6 +14,16 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        fadeDots: {
+          "0%": { opacity: "0.2", transform: "scale(0.1)" },
+          "60%": { opacity: "1", transform: "scale(1.2)" },
+          "100%": { opacity: "0.2", transform: "scale(0.1)" },
+        },
+      },
+      animation: {
+        fadeDots: "fadeDots .8s infinite",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

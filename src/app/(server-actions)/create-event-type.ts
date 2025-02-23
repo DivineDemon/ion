@@ -32,7 +32,6 @@ export async function createEventType(
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error(error);
     return { success: false, error: "Failed to create event" };
   }
 }

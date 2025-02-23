@@ -27,7 +27,6 @@ export async function toggleEventType(id: string, active: boolean) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error(error);
     return { success: false, error: "Failed to toggle event" };
   }
 }

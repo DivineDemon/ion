@@ -6,3 +6,9 @@ declare type User = {
   userName?: string;
   firstName: string;
 };
+
+declare type Message = {
+  id: number;
+  content: string;
+  type: "client" | "bot";
+};

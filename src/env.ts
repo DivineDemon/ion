@@ -16,6 +16,7 @@ export const env = createEnv({
     NYLAS_API_SECRET_KEY: z.string(),
     NYLAS_API_URI: z.string().url(),
     NYLAS_CLIENT_ID: z.string(),
+    OPENAI_API_KEY: z.string(),
   },
   client: {
     NEXT_PUBLIC_KINDE_EMAIL_CONNECTION_ID: z.string().min(1),
@@ -44,6 +45,7 @@ export const env = createEnv({
     NYLAS_CLIENT_ID: process.env.NYLAS_CLIENT_ID,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_IMGBB_KEY: process.env.NEXT_PUBLIC_IMGBB_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
   emptyStringAsUndefined: true,

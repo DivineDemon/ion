@@ -36,7 +36,6 @@ export async function updateEventType(
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error(error);
     return { success: false, error: "Failed to update event" };
   }
 }

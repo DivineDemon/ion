@@ -24,7 +24,6 @@ export async function deleteEventType(eventId: string) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error(error);
     return { success: false, error: "Failed to delete event type" };
   }
 }
