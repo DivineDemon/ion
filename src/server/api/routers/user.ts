@@ -93,6 +93,7 @@ export const userRouter = createTRPCRouter({
         id: ctx.user.id,
       },
       select: {
+        grantId: true,
         grantEmail: true,
       },
     });

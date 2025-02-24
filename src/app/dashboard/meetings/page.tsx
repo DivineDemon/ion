@@ -50,10 +50,12 @@ const Page = async () => {
   return (
     <div className="flex h-full w-full flex-col items-start justify-start gap-5 p-5">
       {data.data.length < 1 ? (
-        <NotFound
-          title="No Meetings Found!"
-          description="scheduling a meeting"
-        />
+        <div className="flex h-full w-full items-center justify-center">
+          <NotFound
+            title="No Meetings Found!"
+            description="scheduling a meeting"
+          />
+        </div>
       ) : (
         <Card className="flex h-full w-1/2 flex-col">
           <CardHeader className="w-full rounded-t-lg border-b bg-sidebar">

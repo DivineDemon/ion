@@ -2,10 +2,12 @@
 
 import { type Dispatch, type SetStateAction, useState } from "react";
 
+import MDEditor from "@uiw/react-md-editor";
 import { Send } from "lucide-react";
 import { toast } from "sonner";
 
 import { chatWithIon } from "@/app/(server-actions)/chat-with-ion";
+import useAccount from "@/hooks/use-account";
 import { cn } from "@/lib/utils";
 
 import { Button } from "./ui/button";
@@ -18,6 +20,7 @@ interface ChatBarProps {
 }
 
 const ChatBar = ({ open, setOpen }: ChatBarProps) => {
+  const { account } = useAccount();
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,7 +37,9 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
     setQuery("");
 
     try {
-      const response: ReadableStream = await chatWithIon(query);
+      const response: ReadableStream = await chatWithIon(
+        `${query}. Email: ${account}`
+      );
 
       if (!response) {
         toast.error("No response body received");
@@ -113,9 +118,9 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent className="p-0">
-        <div className="flex h-full w-full flex-col items-center justify-center gap-5 p-5">
-          <div className="flex h-[calc(100vh-150px)] w-full flex-col gap-3 overflow-y-auto rounded-xl border p-3">
+      <SheetContent className="gap-0 space-y-0 p-0">
+        <div className="flex h-full w-full flex-col items-center justify-between p-5">
+          <div className="flex h-[calc(100vh-100px)] w-full flex-col gap-3 overflow-y-auto overflow-x-hidden rounded-xl border p-3">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -124,30 +129,40 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
                 }`}
               >
                 <div
-                  className={cn("max-w-2/3 rounded-xl px-4 py-2 text-sm", {
-                    "bg-primary/10 text-right text-yellow-600":
-                      message.type === "client",
-                    "bg-muted text-left": message.type === "bot",
-                  })}
+                  className={cn(
+                    "max-w-2/3 flex flex-wrap items-start justify-start break-all rounded-xl px-4 py-2 text-sm",
+                    {
+                      "bg-primary/10 text-right text-yellow-600":
+                        message.type === "client",
+                      "bg-muted text-left": message.type === "bot",
+                    }
+                  )}
                 >
-                  {message.content || (
+                  {message.content ? (
+                    <MDEditor.Markdown
+                      source={message.content}
+                      style={{
+                        background: "transparent",
+                        padding: 0,
+                      }}
+                    />
+                  ) : (
                     <div className="flex items-center gap-1">
-                      <div className="h-2 w-2 animate-fadeDots rounded-full bg-gray-500"></div>
+                      <div className="size-2 animate-fadeDots rounded-full bg-primary" />
                       <div
-                        className="h-2 w-2 animate-fadeDots rounded-full bg-gray-500"
+                        className="size-2 animate-fadeDots rounded-full bg-primary"
                         style={{ animationDelay: "0.2s" }}
-                      ></div>
+                      />
                       <div
-                        className="h-2 w-2 animate-fadeDots rounded-full bg-gray-500"
+                        className="size-2 animate-fadeDots rounded-full bg-primary"
                         style={{ animationDelay: "0.4s" }}
-                      ></div>
+                      />
                     </div>
                   )}
                 </div>
               </div>
             ))}
           </div>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
