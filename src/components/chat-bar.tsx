@@ -4,6 +4,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 
 import MDEditor from "@uiw/react-md-editor";
 import { Send } from "lucide-react";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { toast } from "sonner";
 
 import { chatWithIon } from "@/app/(server-actions)/chat-with-ion";
@@ -23,7 +24,7 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
   const { account } = useAccount();
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
 
   const handleChat = async () => {
     if (!query.trim()) return;
@@ -31,14 +32,15 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
     setLoading(true);
     setMessages((prev) => [
       ...prev,
-      { id: prev.length + 1, type: "client", content: query },
-      { id: prev.length + 2, type: "bot", content: "" },
+      { role: "user", content: query },
+      { role: "assistant", content: "" },
     ]);
     setQuery("");
 
     try {
       const response: ReadableStream = await chatWithIon(
-        `${query}. Email: ${account}`
+        `${query}. { email: ${account}, eventId: "" }`,
+        messages
       );
 
       if (!response) {
@@ -106,8 +108,7 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
       setMessages((prev) => [
         ...prev,
         {
-          id: prev.length + 1,
-          type: "bot",
+          role: "assistant",
           content: "Error processing request.",
         },
       ]);
@@ -121,11 +122,11 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
       <SheetContent className="gap-0 space-y-0 p-0">
         <div className="flex h-full w-full flex-col items-center justify-between p-5">
           <div className="flex h-[calc(100vh-100px)] w-full flex-col gap-3 overflow-y-auto overflow-x-hidden rounded-xl border p-3">
-            {messages.map((message) => (
+            {messages.map((message, idx) => (
               <div
-                key={message.id}
+                key={idx}
                 className={`flex w-full ${
-                  message.type === "client" ? "justify-end" : "justify-start"
+                  message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
@@ -133,14 +134,14 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
                     "max-w-2/3 flex flex-wrap items-start justify-start break-all rounded-xl px-4 py-2 text-sm",
                     {
                       "bg-primary/10 text-right text-yellow-600":
-                        message.type === "client",
-                      "bg-muted text-left": message.type === "bot",
+                        message.role === "user",
+                      "bg-muted text-left": message.role === "assistant",
                     }
                   )}
                 >
                   {message.content ? (
                     <MDEditor.Markdown
-                      source={message.content}
+                      source={message.content as string}
                       style={{
                         background: "transparent",
                         padding: 0,

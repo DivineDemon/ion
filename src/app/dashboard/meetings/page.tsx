@@ -47,6 +47,8 @@ const Page = async () => {
     },
   });
 
+  console.log(JSON.stringify(data.data));
+
   return (
     <div className="flex h-full w-full flex-col items-start justify-start gap-5 p-5">
       {data.data.length < 1 ? (

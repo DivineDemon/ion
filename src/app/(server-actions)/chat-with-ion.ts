@@ -2,11 +2,14 @@
 
 import { type ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
-import { getAllEvents } from "@/app/(server-actions)/ai-tools";
+import { deleteEvent, getAllEvents } from "@/app/(server-actions)/ai-tools";
 import { openai } from "@/lib/ai";
 import { SYSTEM_PROMPT } from "@/lib/constants";
 
-export async function chatWithIon(query: string) {
+export async function chatWithIon(
+  query: string,
+  chatHistory: ChatCompletionMessageParam[]
+) {
   let messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
@@ -20,7 +23,7 @@ export async function chatWithIon(query: string) {
 
   const initialResponse = await openai.chat.completions.create({
     model: "gpt-4-turbo-2024-04-09",
-    messages,
+    messages: [...messages, ...chatHistory],
     tools: [
       {
         type: "function",
@@ -37,6 +40,28 @@ export async function chatWithIon(query: string) {
               },
             },
             required: ["grantEmail"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "cancel_event",
+          description: "Cancels an event.",
+          parameters: {
+            type: "object",
+            properties: {
+              eventId: {
+                type: "string",
+                description: "The ID of the event to be cancelled.",
+              },
+              grantEmail: {
+                type: "string",
+                description:
+                  "The Email that is registered with nylas and against which the user requires the event schedule summary.",
+              },
+            },
+            required: ["eventId", "grantEmail"],
           },
         },
       },
@@ -67,7 +92,38 @@ export async function chatWithIon(query: string) {
 
       const finalResponse = await openai.chat.completions.create({
         model: "gpt-4-turbo-2024-04-09",
-        messages: messages,
+        messages: [...messages, ...chatHistory],
+        stream: true,
+      });
+
+      return finalResponse.toReadableStream();
+    }
+
+    if (toolCall?.function.name === "cancel_event") {
+      const eventData: { eventId: string; grantEmail: string } = JSON.parse(
+        toolCall.function.arguments
+      );
+
+      const response = await deleteEvent(
+        eventData.grantEmail,
+        eventData.eventId
+      );
+
+      messages.push({
+        role: "assistant",
+        content: null,
+        tool_calls: [toolCall],
+      });
+
+      messages.push({
+        role: "tool",
+        tool_call_id: toolCall.id,
+        content: JSON.stringify(response),
+      });
+
+      const finalResponse = await openai.chat.completions.create({
+        model: "gpt-4-turbo-2024-04-09",
+        messages: [...messages, ...chatHistory],
         stream: true,
       });
 
@@ -77,7 +133,7 @@ export async function chatWithIon(query: string) {
 
   const streamResponse = await openai.chat.completions.create({
     model: "gpt-4-turbo-2024-04-09",
-    messages,
+    messages: [...messages, ...chatHistory],
     stream: true,
   });
 
