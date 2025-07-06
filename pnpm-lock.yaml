@@ -14,6 +14,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.60.0(react@18.3.1))
+      '@internationalized/date':
+        specifier: ^3.8.2
+        version: 3.8.2
       '@kinde-oss/kinde-auth-nextjs':
         specifier: ^2.4.6
         version: 2.8.2(eslint@9.30.1(jiti@2.4.2))(next@15.3.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
