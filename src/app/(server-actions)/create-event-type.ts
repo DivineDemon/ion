@@ -1,16 +1,13 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { appointmentTypeSchema } from "@/lib/validators";
 import { db } from "@/server/db";
 
-export async function createEventType(
-  values: z.infer<typeof appointmentTypeSchema>
-) {
+export async function createEventType(values: z.infer<typeof appointmentTypeSchema>) {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
 
@@ -31,7 +28,7 @@ export async function createEventType(
 
     revalidatePath("/dashboard");
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to create event" };
   }
 }

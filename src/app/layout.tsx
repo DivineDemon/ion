@@ -23,16 +23,10 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.svg" }],
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <AuthProvider>
-      <html
-        lang="en"
-        className={cn(dmSans.variable, eb_garamond.variable)}
-        suppressHydrationWarning={true}
-      >
+      <html lang="en" className={cn(dmSans.variable, eb_garamond.variable)} suppressHydrationWarning={true}>
         <body className="flex min-h-[calc(100vh-1px)] flex-col font-sans antialiased">
           <main className="relative flex flex-1 flex-col">
             <TRPCReactProvider>

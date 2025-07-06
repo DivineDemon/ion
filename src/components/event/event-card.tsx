@@ -1,16 +1,9 @@
 "use client";
 
+import { EllipsisVertical, ExternalLink, Link2, Pen, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { startTransition, useOptimistic, useState } from "react";
-
-import {
-  EllipsisVertical,
-  ExternalLink,
-  Link2,
-  Pen,
-  Trash,
-} from "lucide-react";
 import { toast } from "sonner";
 
 import { deleteEventType } from "@/app/(server-actions)/delete-event-type";
@@ -52,12 +45,9 @@ interface EventCardProps {
 
 const EventCard = ({ data }: EventCardProps) => {
   const [edit, setEdit] = useState<boolean>(false);
-  const [optimisticEventType, toggleOptimisticEventType] = useOptimistic(
-    data,
-    (state, newState: boolean) => {
-      return { ...state, active: newState };
-    }
-  );
+  const [optimisticEventType, toggleOptimisticEventType] = useOptimistic(data, (state, newState: boolean) => {
+    return { ...state, active: newState };
+  });
 
   const { data: user } = api.user.findUser.useQuery();
 
@@ -77,34 +67,23 @@ const EventCard = ({ data }: EventCardProps) => {
     });
 
     try {
-      const response = await toggleEventType(
-        data.id,
-        !optimisticEventType.active
-      );
+      const response = await toggleEventType(data.id, !optimisticEventType.active);
 
       if (!response.success) {
         toast.error("Failed to Toggle Event!");
-        startTransition(() =>
-          toggleOptimisticEventType(optimisticEventType.active)
-        );
+        startTransition(() => toggleOptimisticEventType(optimisticEventType.active));
       } else {
         toast.success("Successfully Toggled Event!");
       }
-    } catch (error: Error | unknown) {
+    } catch (error) {
       toast.error((error as Error).message);
-      startTransition(() =>
-        toggleOptimisticEventType(optimisticEventType.active)
-      );
+      startTransition(() => toggleOptimisticEventType(optimisticEventType.active));
     }
   };
 
   return (
     <>
-      <EditEventModal
-        open={edit}
-        setOpen={setEdit}
-        id={optimisticEventType.id}
-      />
+      <EditEventModal open={edit} setOpen={setEdit} id={optimisticEventType.id} />
       <div className="col-span-1 flex h-fit w-full flex-col items-start justify-start overflow-hidden rounded-lg border">
         <div className="flex w-full items-center justify-center gap-5 bg-sidebar p-2.5">
           <Image
@@ -121,10 +100,8 @@ const EventCard = ({ data }: EventCardProps) => {
             className="size-10 shrink-0"
           />
           <div className="flex w-full flex-col items-center justify-center">
-            <span className="w-full overflow-hidden truncate text-left font-semibold">
-              {optimisticEventType.title}
-            </span>
-            <span className="w-full text-left text-sm text-gray-500">
+            <span className="w-full overflow-hidden truncate text-left font-semibold">{optimisticEventType.title}</span>
+            <span className="w-full text-left text-gray-500 text-sm">
               Scheduled for {optimisticEventType.duration} Minutes
             </span>
           </div>
@@ -150,28 +127,20 @@ const EventCard = ({ data }: EventCardProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
-                    copyToClipboard(
-                      `${env.NEXT_PUBLIC_APP_URL}/${user?.userName}/${optimisticEventType.url}`
-                    )
+                    copyToClipboard(`${env.NEXT_PUBLIC_APP_URL}/${user?.userName}/${optimisticEventType.url}`)
                   }
                 >
                   <Link2 />
                   <span className="ml-2">Copy</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <div
-                    onClick={() => setEdit(true)}
-                    className="flex w-full items-center justify-start gap-4"
-                  >
+                  <div onClick={() => setEdit(true)} className="flex w-full items-center justify-start gap-4">
                     <Pen className="size-4" />
                     <span>Edit</span>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="group"
-                  onClick={() => handleDelete(optimisticEventType.id)}
-                >
+                <DropdownMenuItem className="group" onClick={() => handleDelete(optimisticEventType.id)}>
                   <Trash className="transition-colors group-hover:text-destructive" />
                   <span className="ml-2">Delete</span>
                 </DropdownMenuItem>
@@ -180,16 +149,10 @@ const EventCard = ({ data }: EventCardProps) => {
           </DropdownMenu>
         </div>
         <div className="flex w-full flex-col items-center justify-center p-2.5">
-          <span className="line-clamp-3 w-full text-left text-sm text-gray-500">
-            {optimisticEventType.description}
-          </span>
+          <span className="line-clamp-3 w-full text-left text-gray-500 text-sm">{optimisticEventType.description}</span>
         </div>
         <div className="flex w-full items-center justify-between gap-2.5 border-t p-2.5">
-          <Switch
-            className="shrink-0"
-            onCheckedChange={handleToggle}
-            defaultChecked={optimisticEventType.active}
-          />
+          <Switch className="shrink-0" onCheckedChange={handleToggle} defaultChecked={optimisticEventType.active} />
         </div>
       </div>
     </>

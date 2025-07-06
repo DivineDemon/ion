@@ -6,11 +6,8 @@ import { deleteEvent, getAllEvents } from "@/app/(server-actions)/ai-tools";
 import { openai } from "@/lib/ai";
 import { SYSTEM_PROMPT } from "@/lib/constants";
 
-export async function chatWithIon(
-  query: string,
-  chatHistory: ChatCompletionMessageParam[]
-) {
-  let messages: ChatCompletionMessageParam[] = [
+export async function chatWithIon(query: string, chatHistory: ChatCompletionMessageParam[]) {
+  const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
       content: SYSTEM_PROMPT,
@@ -72,9 +69,7 @@ export async function chatWithIon(
     const toolCall = initialResponse.choices[0]?.message.tool_calls[0];
 
     if (toolCall?.function.name === "get_events_summary") {
-      const userEmail: { grantEmail: string } = JSON.parse(
-        toolCall.function.arguments
-      );
+      const userEmail: { grantEmail: string } = JSON.parse(toolCall.function.arguments);
 
       const summary = await getAllEvents(userEmail.grantEmail);
 
@@ -100,14 +95,9 @@ export async function chatWithIon(
     }
 
     if (toolCall?.function.name === "cancel_event") {
-      const eventData: { eventId: string; grantEmail: string } = JSON.parse(
-        toolCall.function.arguments
-      );
+      const eventData: { eventId: string; grantEmail: string } = JSON.parse(toolCall.function.arguments);
 
-      const response = await deleteEvent(
-        eventData.grantEmail,
-        eventData.eventId
-      );
+      const response = await deleteEvent(eventData.grantEmail, eventData.eventId);
 
       messages.push({
         role: "assistant",

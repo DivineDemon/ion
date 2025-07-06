@@ -1,8 +1,7 @@
-import Image from "next/image";
-import { notFound } from "next/navigation";
-
 import dayjs from "dayjs";
 import { CalendarX2, Clock } from "lucide-react";
+import Image from "next/image";
+import { notFound } from "next/navigation";
 
 import { bookMeeting } from "@/app/(server-actions)/book-meeting";
 import GoogleMeet from "@/assets/img/meet.svg";
@@ -84,30 +83,26 @@ const Page = async ({ params, searchParams }: PageProps) => {
                 height={40}
                 className="size-10 rounded-full"
               />
-              <p className="w-full text-left text-sm font-medium text-muted-foreground">
+              <p className="w-full text-left font-medium text-muted-foreground text-sm">
                 {response.User?.firstName}&nbsp;{response.User?.lastName}
               </p>
             </div>
             <div className="flex w-full flex-col items-start justify-start gap-2.5 pt-5">
-              <h1 className="w-full text-left text-xl font-semibold">
-                {response.title}
-              </h1>
-              <p className="w-full max-w-prose text-pretty text-left text-sm font-medium text-muted-foreground">
+              <h1 className="w-full text-left font-semibold text-xl">{response.title}</h1>
+              <p className="w-full max-w-prose text-pretty text-left font-medium text-muted-foreground text-sm">
                 {response.description}
               </p>
             </div>
             <div className="flex w-full flex-col items-start justify-start gap-2.5 pt-5">
               <div className="flex w-full items-center justify-center gap-3">
                 <CalendarX2 className="size-4 text-primary" />
-                <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
-                  {date
-                    ? dayjs(date).format("DD MMMM, YYYY")
-                    : dayjs(new Date()).format("DD MMMM, YYYY")}
+                <span className="flex-1 text-left font-medium text-muted-foreground text-sm">
+                  {date ? dayjs(date).format("DD MMMM, YYYY") : dayjs(new Date()).format("DD MMMM, YYYY")}
                 </span>
               </div>
               <div className="flex w-full items-center justify-center gap-3">
                 <Clock className="size-4 text-primary" />
-                <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+                <span className="flex-1 text-left font-medium text-muted-foreground text-sm">
                   {response.duration}&nbsp;Minutes
                 </span>
               </div>
@@ -125,7 +120,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
                         : Teams
                   }
                 />
-                <span className="flex-1 text-left text-sm font-medium text-muted-foreground">
+                <span className="flex-1 text-left font-medium text-muted-foreground text-sm">
                   {response.videoCallSoftware}
                 </span>
               </div>
@@ -133,52 +128,23 @@ const Page = async ({ params, searchParams }: PageProps) => {
           </div>
           <Separator orientation="vertical" />
           {showForm ? (
-            <form
-              action={bookMeeting}
-              className="col-span-1 flex w-full flex-col items-start justify-start gap-5 pl-5"
-            >
+            <form action={bookMeeting} className="col-span-1 flex w-full flex-col items-start justify-start gap-5 pl-5">
               <Input type="hidden" name="fromTime" value={time} />
               <Input type="hidden" name="eventDate" value={date} />
               <Input type="hidden" name="eventTypeId" value={response.id} />
-              <Input
-                type="hidden"
-                name="meetingLength"
-                value={response.duration}
-              />
-              <Input
-                type="hidden"
-                name="provider"
-                value={response.videoCallSoftware}
-              />
+              <Input type="hidden" name="meetingLength" value={response.duration} />
+              <Input type="hidden" name="provider" value={response.videoCallSoftware} />
               <div className="flex w-full flex-col items-center justify-center gap-2">
-                <Label
-                  htmlFor="name"
-                  className="w-full text-left text-sm font-medium"
-                >
+                <Label htmlFor="name" className="w-full text-left font-medium text-sm">
                   Name
                 </Label>
-                <Input
-                  className="w-full"
-                  id="name"
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                />
+                <Input className="w-full" id="name" type="text" name="name" placeholder="Your Name" />
               </div>
               <div className="flex w-full flex-col items-center justify-center gap-2">
-                <Label
-                  htmlFor="email"
-                  className="w-full text-left text-sm font-medium"
-                >
+                <Label htmlFor="email" className="w-full text-left font-medium text-sm">
                   Email
                 </Label>
-                <Input
-                  className="w-full"
-                  id="email"
-                  type="email"
-                  name="email"
-                  placeholder="johndoe@email.com"
-                />
+                <Input className="w-full" id="email" type="email" name="email" placeholder="johndoe@email.com" />
               </div>
               <SubmitButton text="Book Meeting" className="mt-auto w-full" />
             </form>

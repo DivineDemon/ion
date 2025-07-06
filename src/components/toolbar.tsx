@@ -1,26 +1,16 @@
 "use client";
 
+import { LogoutLink, useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { Bot, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-
-import {
-  LogoutLink,
-  useKindeBrowserClient,
-} from "@kinde-oss/kinde-auth-nextjs";
-import { Bot, Loader2 } from "lucide-react";
 
 import useAccount from "@/hooks/use-account";
 
 import ChatBar from "./chat-bar";
 import ModeToggle from "./mode-toggle";
 import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Separator } from "./ui/separator";
 import { SidebarTrigger } from "./ui/sidebar";
 
@@ -62,10 +52,7 @@ const Toolbar = () => {
             <Bot className="size-full" />
           </Button>
           <ModeToggle />
-          <Separator
-            orientation="vertical"
-            className="mx-3.5 h-8 w-px border border-primary/20"
-          />
+          <Separator orientation="vertical" className="mx-3.5 h-8 w-px border border-primary/20" />
           <LogoutLink>
             <Image
               src={user?.picture ?? "https://ui.shadcn.com/avatars/04.png"}

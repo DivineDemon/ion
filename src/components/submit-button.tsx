@@ -12,25 +12,12 @@ const SubmitButton = ({
 }: {
   text: string;
   className?: string;
-  variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link"
-    | null
-    | undefined;
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined;
 }) => {
   const { pending } = useFormStatus();
 
   return pending ? (
-    <Button
-      type="button"
-      disabled={true}
-      variant={variant}
-      className={className}
-    >
+    <Button type="button" disabled={true} variant={variant} className={className}>
       <Loader2 className="animate-spin" />
       <span>Please Wait...</span>
     </Button>

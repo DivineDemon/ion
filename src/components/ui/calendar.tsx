@@ -1,11 +1,9 @@
 "use client";
 
-import { useRef } from "react";
-
 import {
   type CalendarDate,
-  type DateDuration,
   createCalendar,
+  type DateDuration,
   endOfMonth,
   getLocalTimeZone,
   getWeeksInMonth,
@@ -19,12 +17,8 @@ import { mergeProps } from "@react-aria/utils";
 import { VisuallyHidden } from "@react-aria/visually-hidden";
 import type { CalendarProps, DateValue } from "@react-types/calendar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  useCalendar,
-  useCalendarCell,
-  useCalendarGrid,
-  useLocale,
-} from "react-aria";
+import { useRef } from "react";
+import { useCalendar, useCalendarCell, useCalendarGrid, useLocale } from "react-aria";
 import { type CalendarState, useCalendarState } from "react-stately";
 
 import { cn } from "@/lib/utils";
@@ -44,7 +38,7 @@ const CalendarCell = ({
 }) => {
   const calendarCellRef = useRef<HTMLDivElement>(null);
 
-  let {
+  const {
     cellProps,
     buttonProps: calendarCellProps,
     formattedDate,
@@ -69,25 +63,19 @@ const CalendarCell = ({
         className="group size-12 rounded-md outline-none"
       >
         <div
-          className={cn(
-            "relative flex size-full items-center justify-center rounded-sm text-sm font-semibold",
-            {
-              "bg-primary text-black": isSelected,
-              "cursor-not-allowed text-muted-foreground": finallyIsDisabled,
-              "hover:bg-primary/10": !isSelected && !finallyIsDisabled,
-              "bg-secondary": !isSelected && !finallyIsDisabled,
-            }
-          )}
+          className={cn("relative flex size-full items-center justify-center rounded-sm font-semibold text-sm", {
+            "bg-primary text-black": isSelected,
+            "cursor-not-allowed text-muted-foreground": finallyIsDisabled,
+            "hover:bg-primary/10": !isSelected && !finallyIsDisabled,
+            "bg-secondary": !isSelected && !finallyIsDisabled,
+          })}
         >
           {formattedDate}
           {isToday(date, getLocalTimeZone()) && (
             <div
-              className={cn(
-                "absolute inset-x-0 bottom-1.5 mx-auto size-1.5 rounded-full bg-primary",
-                {
-                  "bg-black": isSelected,
-                }
-              )}
+              className={cn("absolute inset-x-0 bottom-1.5 mx-auto size-1.5 rounded-full bg-primary", {
+                "bg-black": isSelected,
+              })}
             />
           )}
         </div>
@@ -99,7 +87,7 @@ const CalendarCell = ({
 const Calendar = (
   props: CalendarProps<DateValue> & {
     isDateUnavailable?: (date: DateValue) => boolean;
-  }
+  },
 ) => {
   const { locale } = useLocale();
 
@@ -114,10 +102,7 @@ const Calendar = (
     createCalendar,
   });
 
-  let { calendarProps, prevButtonProps, nextButtonProps } = useCalendar(
-    props,
-    state
-  );
+  const { calendarProps, prevButtonProps, nextButtonProps } = useCalendar(props, state);
 
   const monthFormatter = useDateFormatter({
     month: "short",
@@ -129,32 +114,23 @@ const Calendar = (
     .formatToParts(state.visibleRange.start.toDate(state.timeZone))
     .map((part) => part.value);
 
-  const { buttonProps: prevProps } = useButton(
-    prevButtonProps,
-    calendarButtonRef
-  );
+  const { buttonProps: prevProps } = useButton(prevButtonProps, calendarButtonRef);
 
-  const { buttonProps: nextProps } = useButton(
-    nextButtonProps,
-    calendarButtonRef
-  );
+  const { buttonProps: nextProps } = useButton(nextButtonProps, calendarButtonRef);
 
   const { focusProps } = useFocusRing();
 
-  let offset: DateDuration = {};
+  const offset: DateDuration = {};
 
-  let weeksInMonth = getWeeksInMonth(
-    state.visibleRange.start.add(offset),
-    locale
-  );
+  const weeksInMonth = getWeeksInMonth(state.visibleRange.start.add(offset), locale);
 
-  let { gridProps, headerProps, weekDays } = useCalendarGrid(
+  const { gridProps, headerProps, weekDays } = useCalendarGrid(
     {
       startDate: state.visibleRange.start.add(offset),
       endDate: endOfMonth(state.visibleRange.start.add(offset)),
       weekdayStyle: "short",
     },
-    state
+    state,
   );
 
   return (
@@ -165,9 +141,7 @@ const Calendar = (
         </VisuallyHidden>
         <h2 className="flex-1 font-semibold">
           {monthName}&nbsp;
-          <span className="text-sm font-medium text-muted-foreground">
-            {year}
-          </span>
+          <span className="font-medium text-muted-foreground text-sm">{year}</span>
         </h2>
         <div className="flex items-center gap-2">
           <Button
@@ -192,7 +166,7 @@ const Calendar = (
       </div>
       <div className="flex gap-8">
         <table {...gridProps} cellPadding={0} className="flex-1">
-          <thead {...headerProps} className="text-sm font-medium">
+          <thead {...headerProps} className="font-medium text-sm">
             <tr>
               {weekDays.map((day, index) => (
                 <th key={index} className="pb-4">
@@ -217,7 +191,7 @@ const Calendar = (
                       />
                     ) : (
                       <td key={i} />
-                    )
+                    ),
                   )}
               </tr>
             ))}

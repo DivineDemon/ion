@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { revalidatePath } from "next/cache";
 
 import { db } from "@/server/db";
 
@@ -40,12 +39,12 @@ export async function updateAvailability(data: FormData) {
             fromTime: availability.fromTime,
             tillTime: availability.tillTime,
           },
-        })
-      )
+        }),
+      ),
     );
 
     revalidatePath("/dashboard/availability");
-  } catch (error: Error | unknown) {
+  } catch (error) {
     throw new Error((error as Error).message);
   }
 }

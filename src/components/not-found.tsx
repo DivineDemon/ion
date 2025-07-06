@@ -17,14 +17,12 @@ const NotFound = ({ title, description }: NotFoundProps) => {
           alt="not-found"
           width={288}
           height={288}
-          className="absolute left-5 top-2.5 z-[1] size-72"
+          className="absolute top-2.5 left-5 z-[1] size-72"
         />
       </div>
       <div className="flex w-full flex-col items-center justify-center gap-2">
-        <span className="w-full text-center text-3xl font-bold capitalize text-yellow-700">
-          {title}
-        </span>
-        <span className="w-full text-center text-sm text-muted-foreground">
+        <span className="w-full text-center font-bold text-3xl text-yellow-700 capitalize">{title}</span>
+        <span className="w-full text-center text-muted-foreground text-sm">
           No worries, enjoy your free time or
           <br />
           start by&nbsp;{description}.

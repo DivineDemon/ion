@@ -1,8 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { revalidatePath } from "next/cache";
 
 import { db } from "@/server/db";
 
@@ -26,7 +25,7 @@ export async function toggleEventType(id: string, active: boolean) {
 
     revalidatePath("/dashboard");
     return { success: true };
-  } catch (error) {
+  } catch (_error) {
     return { success: false, error: "Failed to toggle event" };
   }
 }

@@ -12,13 +12,10 @@ export async function parseImage(file: File) {
   const formData = new FormData();
   formData.append("image", file);
 
-  const converted = await fetch(
-    `https://api.imgbb.com/1/upload?key=${env.NEXT_PUBLIC_IMGBB_KEY}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
+  const converted = await fetch(`https://api.imgbb.com/1/upload?key=${env.NEXT_PUBLIC_IMGBB_KEY}`, {
+    method: "POST",
+    body: formData,
+  });
 
   const response: {
     data: { url: String };
@@ -31,7 +28,7 @@ export async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
     toast.success("Copied Link to Clipboard!");
-  } catch (err) {
+  } catch (_err) {
     toast.success("Failed to copy text to clipboard");
   }
 }

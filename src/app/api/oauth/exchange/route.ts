@@ -1,7 +1,6 @@
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
-
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { env } from "@/env";
 import { nylas } from "@/lib/nylas";
@@ -45,11 +44,8 @@ export async function GET(req: NextRequest) {
         },
       },
     });
-  } catch (error: Error | unknown) {
-    return NextResponse.json(
-      { message: "Error exchanging code for token", error },
-      { status: 500 }
-    );
+  } catch (error) {
+    return NextResponse.json({ message: "Error exchanging code for token", error }, { status: 500 });
   }
 
   redirect("/dashboard");

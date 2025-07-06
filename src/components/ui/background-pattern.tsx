@@ -19,12 +19,7 @@ const BackgroundPattern = (props: LucideProps) => {
         width="768"
         height="768"
       >
-        <rect
-          width="768"
-          height="768"
-          transform="translate(0 -32)"
-          fill="url(#paint0_radial_5036_374506)"
-        />
+        <rect width="768" height="768" transform="translate(0 -32)" fill="url(#paint0_radial_5036_374506)" />
       </mask>
       <g mask="url(#mask0_5036_374506)">
         <g clipPath="url(#clip0_5036_374506)">
@@ -81,12 +76,7 @@ const BackgroundPattern = (props: LucideProps) => {
           <stop offset="1" stopOpacity="0" />
         </radialGradient>
         <clipPath id="clip0_5036_374506">
-          <rect
-            width="768"
-            height="768"
-            fill="white"
-            transform="translate(0 -32)"
-          />
+          <rect width="768" height="768" fill="white" transform="translate(0 -32)" />
         </clipPath>
         <clipPath id="clip1_5036_374506">
           <rect y="-32" width="768" height="768" fill="white" />

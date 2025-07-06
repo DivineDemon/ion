@@ -1,8 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { redirect } from "next/navigation";
 
 import { nylas } from "@/lib/nylas";
 import { db } from "@/server/db";
@@ -39,12 +38,8 @@ export async function bookMeeting(data: FormData) {
     },
   });
 
-  const startDate = new Date(
-    `${data.get("eventDate")}T${data.get("fromTime")}:00`
-  );
-  const endDate = new Date(
-    startDate.getTime() + Number(data.get("meetingLength")) * 60000
-  );
+  const startDate = new Date(`${data.get("eventDate")}T${data.get("fromTime")}:00`);
+  const endDate = new Date(startDate.getTime() + Number(data.get("meetingLength")) * 60000);
 
   await nylas.events.create({
     identifier: dbUser.grantId[0] as string,
@@ -57,7 +52,7 @@ export async function bookMeeting(data: FormData) {
       },
       conferencing: {
         autocreate: {},
-        provider: data.get("provider") as any,
+        provider: data.get("provider") as "Google Meet" | "Zoom Meeting" | "Microsoft Teams" | "GoToMeeting" | "WebEx",
       },
       participants: [
         {

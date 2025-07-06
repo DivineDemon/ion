@@ -12,23 +12,10 @@ import { appointmentTypeSchema } from "@/lib/validators";
 
 import { Button } from "../ui/button";
 import { CardContent } from "../ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
 const EventForm = () => {
@@ -53,7 +40,7 @@ const EventForm = () => {
       } else {
         toast.error("Something went wrong!");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong!");
     }
   };
@@ -76,10 +63,7 @@ const EventForm = () => {
             )}
           />
           <div className="col-span-1 flex w-full flex-col items-center justify-center gap-2.5 pt-[7px]">
-            <Label
-              htmlFor="url-slug"
-              className="w-full text-left text-sm font-medium leading-none"
-            >
+            <Label htmlFor="url-slug" className="w-full text-left font-medium text-sm leading-none">
               URL Slug
             </Label>
             <div className="flex w-full items-center justify-center overflow-hidden rounded-md border border-input shadow-sm">
@@ -128,10 +112,7 @@ const EventForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Duration</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={`${field.value}`}
-                >
+                <Select onValueChange={field.onChange} defaultValue={`${field.value}`}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Duration" />
@@ -154,10 +135,7 @@ const EventForm = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Video Call Software</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Video Call Software" />
@@ -165,9 +143,7 @@ const EventForm = () => {
                   </FormControl>
                   <SelectContent>
                     <SelectItem value="Zoom Meeting">Zoom Meeting</SelectItem>
-                    <SelectItem value="Microsoft Teams">
-                      Microsoft Teams
-                    </SelectItem>
+                    <SelectItem value="Microsoft Teams">Microsoft Teams</SelectItem>
                     <SelectItem value="Google Meet">Google Meet</SelectItem>
                   </SelectContent>
                 </Select>
@@ -177,11 +153,7 @@ const EventForm = () => {
           />
         </CardContent>
         <div className="flex w-full items-center justify-end px-5">
-          <Button
-            type="submit"
-            disabled={form.formState.isSubmitting}
-            variant="default"
-          >
+          <Button type="submit" disabled={form.formState.isSubmitting} variant="default">
             {form.formState.isSubmitting ? (
               <>
                 <Loader2 className="animate-spin" /> Please Wait...

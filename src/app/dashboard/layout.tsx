@@ -1,28 +1,17 @@
-import Image from "next/image";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { type ReactNode } from "react";
 
-import {
-  LogoutLink,
-  getKindeServerSession,
-} from "@kinde-oss/kinde-auth-nextjs/server";
-
 import AppSidebar from "@/components/app-sidebar";
-import ModeToggle from "@/components/mode-toggle";
 import { ThemeProvider } from "@/components/theme-provider";
 import Toolbar from "@/components/toolbar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 const Layout = async ({ children }: { children: ReactNode }) => {
   const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const _user = await getUser();
 
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       <SidebarProvider>
         <div className="flex h-screen w-full items-center justify-center overflow-hidden">
           <AppSidebar />

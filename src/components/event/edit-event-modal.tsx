@@ -1,9 +1,8 @@
 "use client";
 
-import { type Dispatch, type SetStateAction, useEffect } from "react";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { type Dispatch, type SetStateAction, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -14,30 +13,11 @@ import { appointmentTypeSchema } from "@/lib/validators";
 import { api } from "@/trpc/react";
 
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Textarea } from "../ui/textarea";
 
 interface EditEventModalProps {
@@ -62,7 +42,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
     { eventId: id },
     {
       enabled: open,
-    }
+    },
   );
 
   const onSubmit = async (values: z.infer<typeof appointmentTypeSchema>) => {
@@ -76,7 +56,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
       } else {
         toast.error("Something went wrong!");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Something went wrong!");
     }
   };
@@ -98,9 +78,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Edit Event Type</DialogTitle>
-          <DialogDescription>
-            Make changes to your event type here. Click save when you're done.
-          </DialogDescription>
+          <DialogDescription>Make changes to your event type here. Click save when you're done.</DialogDescription>
         </DialogHeader>
         <div className="flex w-full items-center justify-center gap-5">
           <Form {...form}>
@@ -122,10 +100,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
                 )}
               />
               <div className="col-span-1 flex w-full flex-col items-center justify-center gap-3 pt-1">
-                <Label
-                  htmlFor="url-slug"
-                  className="w-full text-left text-sm font-medium leading-none"
-                >
+                <Label htmlFor="url-slug" className="w-full text-left font-medium text-sm leading-none">
                   URL Slug
                 </Label>
                 <div className="flex w-full items-center justify-center overflow-hidden rounded-md border border-input shadow-sm">
@@ -204,12 +179,8 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Zoom Meeting">
-                          Zoom Meeting
-                        </SelectItem>
-                        <SelectItem value="Microsoft Teams">
-                          Microsoft Teams
-                        </SelectItem>
+                        <SelectItem value="Zoom Meeting">Zoom Meeting</SelectItem>
+                        <SelectItem value="Microsoft Teams">Microsoft Teams</SelectItem>
                         <SelectItem value="Google Meet">Google Meet</SelectItem>
                       </SelectContent>
                     </Select>
@@ -218,11 +189,7 @@ const EditEventModal = ({ id, open, setOpen }: EditEventModalProps) => {
                 )}
               />
               <div className="col-span-2 flex w-full items-center justify-end">
-                <Button
-                  type="submit"
-                  disabled={form.formState.isSubmitting}
-                  variant="default"
-                >
+                <Button type="submit" disabled={form.formState.isSubmitting} variant="default">
                   {form.formState.isSubmitting ? (
                     <>
                       <Loader2 className="animate-spin" /> Please Wait...

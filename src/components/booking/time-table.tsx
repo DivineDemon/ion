@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { GetFreeBusyResponse, NylasResponse } from "nylas";
 
 import { nylas } from "@/lib/nylas";
@@ -24,7 +23,7 @@ const calculateAvailability = (
     fromTime: string | undefined;
     tillTime: string | undefined;
   },
-  nylasData: NylasResponse<GetFreeBusyResponse[]>
+  nylasData: NylasResponse<GetFreeBusyResponse[]>,
 ) => {
   const now = dayjs();
   const availableFrom = dayjs(`${date} ${availability.fromTime}`);
@@ -94,10 +93,10 @@ const TimeTable = async ({ selectedDate, time, duration }: TimeTableProps) => {
     return notFound();
   }
 
-  let startOfDay = new Date(selectedDate);
+  const startOfDay = new Date(selectedDate);
   startOfDay.setHours(0, 0, 0, 0);
 
-  let endOfDay = new Date(selectedDate);
+  const endOfDay = new Date(selectedDate);
   endOfDay.setHours(23, 59, 59, 999);
 
   const nylasCalendarData = await nylas.calendars.getFreeBusy({
@@ -116,14 +115,14 @@ const TimeTable = async ({ selectedDate, time, duration }: TimeTableProps) => {
       fromTime: response.fromTime,
       tillTime: response.tillTime,
     },
-    nylasCalendarData
+    nylasCalendarData,
   );
 
   return (
     <div className="flex h-full w-full flex-col items-start justify-start gap-5 pl-5">
-      <p className="w-full text-left text-[16px] font-semibold leading-[16px]">
+      <p className="w-full text-left font-semibold text-[16px] leading-[16px]">
         {dayjs(selectedDate).format("ddd")}&nbsp;
-        <span className="text-[14px] leading-[14px] text-muted-foreground">
+        <span className="text-[14px] text-muted-foreground leading-[14px]">
           {dayjs(selectedDate).format("MMM. DD")}
         </span>
       </p>
@@ -135,11 +134,7 @@ const TimeTable = async ({ selectedDate, time, duration }: TimeTableProps) => {
                 key={idx}
                 className="w-full"
               >
-                <Button
-                  type="button"
-                  className="w-full"
-                  variant={slot === time ? "default" : "outline"}
-                >
+                <Button type="button" className="w-full" variant={slot === time ? "default" : "outline"}>
                   {slot}
                 </Button>
               </Link>

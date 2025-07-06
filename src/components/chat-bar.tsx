@@ -1,10 +1,9 @@
 "use client";
 
-import { type Dispatch, type SetStateAction, useState } from "react";
-
 import MDEditor from "@uiw/react-md-editor";
 import { Send } from "lucide-react";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 
 import { chatWithIon } from "@/app/(server-actions)/chat-with-ion";
@@ -30,18 +29,11 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
     if (!query.trim()) return;
 
     setLoading(true);
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: query },
-      { role: "assistant", content: "" },
-    ]);
+    setMessages((prev) => [...prev, { role: "user", content: query }, { role: "assistant", content: "" }]);
     setQuery("");
 
     try {
-      const response: ReadableStream = await chatWithIon(
-        `${query}. { email: ${account}, eventId: "" }`,
-        messages
-      );
+      const response: ReadableStream = await chatWithIon(`${query}. { email: ${account}, eventId: "" }`, messages);
 
       if (!response) {
         toast.error("No response body received");
@@ -64,8 +56,7 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
           .map((line) => {
             try {
               return JSON.parse(line);
-            } catch (e) {
-              console.error("JSON Parse Error:", e);
+            } catch (_e) {
               return null;
             }
           })
@@ -81,10 +72,7 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
 
             if (typeof deltaContent === "string") {
               content = deltaContent;
-            } else if (
-              typeof deltaContent === "object" &&
-              deltaContent?.response
-            ) {
+            } else if (typeof deltaContent === "object" && deltaContent?.response) {
               content = deltaContent.response;
             }
           } else if (jsonObj?.response) {
@@ -94,16 +82,12 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
           if (content) {
             botMessage += content;
             setMessages((prev) =>
-              prev.map((msg, index) =>
-                index === prev.length - 1
-                  ? { ...msg, content: botMessage }
-                  : msg
-              )
+              prev.map((msg, index) => (index === prev.length - 1 ? { ...msg, content: botMessage } : msg)),
             );
           }
         }
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Chat Failed!");
       setMessages((prev) => [
         ...prev,
@@ -123,20 +107,14 @@ const ChatBar = ({ open, setOpen }: ChatBarProps) => {
         <div className="flex h-full w-full flex-col items-center justify-between p-5">
           <div className="flex h-[calc(100vh-100px)] w-full flex-col gap-3 overflow-y-auto overflow-x-hidden rounded-xl border p-3">
             {messages.map((message, idx) => (
-              <div
-                key={idx}
-                className={`flex w-full ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
+              <div key={idx} className={`flex w-full ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
                   className={cn(
-                    "max-w-2/3 flex flex-wrap items-start justify-start break-all rounded-xl px-4 py-2 text-sm",
+                    "flex max-w-2/3 flex-wrap items-start justify-start break-all rounded-xl px-4 py-2 text-sm",
                     {
-                      "bg-primary/10 text-right text-yellow-600":
-                        message.role === "user",
+                      "bg-primary/10 text-right text-yellow-600": message.role === "user",
                       "bg-muted text-left": message.role === "assistant",
-                    }
+                    },
                   )}
                 >
                   {message.content ? (

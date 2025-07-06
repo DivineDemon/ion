@@ -1,15 +1,9 @@
 "use client";
 
+import { type CalendarDate, getLocalTimeZone, parseDate, today } from "@internationalized/date";
+import { DateValue } from "@react-types/calendar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import {
-  type CalendarDate,
-  getLocalTimeZone,
-  parseDate,
-  today,
-} from "@internationalized/date";
-import { DateValue } from "@react-types/calendar";
 
 import Calendar from "../ui/calendar";
 

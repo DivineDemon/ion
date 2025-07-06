@@ -1,8 +1,7 @@
-import Link from "next/link";
-
 import { LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { ArrowRight, Atom } from "lucide-react";
+import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 
@@ -23,13 +22,7 @@ const Navbar = async () => {
           <div className="flex h-full items-center space-x-4">
             {user ? (
               <>
-                <LogoutLink
-                  className={cn(
-                    buttonVariants({ size: "sm", variant: "ghost" })
-                  )}
-                >
-                  Sign out
-                </LogoutLink>
+                <LogoutLink className={cn(buttonVariants({ size: "sm", variant: "ghost" }))}>Sign out</LogoutLink>
                 <Link
                   href="/dashboard"
                   className={buttonVariants({
@@ -42,12 +35,7 @@ const Navbar = async () => {
               </>
             ) : (
               <>
-                <Link
-                  href="/sign-in"
-                  className={cn(
-                    buttonVariants({ size: "sm", variant: "ghost" })
-                  )}
-                >
+                <Link href="/sign-in" className={cn(buttonVariants({ size: "sm", variant: "ghost" }))}>
                   Sign in
                 </Link>
                 <div className="h-8 w-px bg-gray-200" />

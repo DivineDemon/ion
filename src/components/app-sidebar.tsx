@@ -1,20 +1,13 @@
 "use client";
 
+import { Atom } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-import { Atom } from "lucide-react";
 
 import { SIDEBAR_ITEMS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
 
 const AppSidebar = () => {
   const path = usePathname();
