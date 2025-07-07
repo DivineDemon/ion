@@ -1,5 +1,4 @@
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { Prisma } from "@prisma/client";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -73,8 +72,15 @@ const TimeTable = async ({ selectedDate, time, duration }: TimeTableProps) => {
 
   const response = await db.availability.findFirst({
     where: {
-      day: dayjs(selectedDate).format("dddd") as Prisma.EnumDayFilter,
-      userId: user.id,
+      day: dayjs(selectedDate).format("dddd") as
+        | "Monday"
+        | "Tuesday"
+        | "Wednesday"
+        | "Thursday"
+        | "Friday"
+        | "Saturday"
+        | "Sunday",
+      userId: user?.id,
     },
     select: {
       id: true,
