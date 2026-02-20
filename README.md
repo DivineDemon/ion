@@ -1,6 +1,8 @@
 # PMI-NN (ION)
 
-Neural networks with PMI-inspired inductive consistency (ION) for length generalization and depth stability.
+This repository accompanies a research paper on a **novel approach for training neural networks using the Principle of Mathematical Induction (PMI)**. **ION** (Inductive invariant for Ordered Networks) enforces *inductive consistency*: the model learns an invariant \(P\) and a rule \(F\) so that along sequences or depth, \(P(h_{t+1}) \approx F(P(h_t), x_t)\). This supports **length generalization** (train on short sequences, evaluate on long ones) and **depth stability** (consistent behavior across many layers).
+
+**Summary:** ION adds an auxiliary loss that ties consecutive hidden states via a learned invariant and update rule. We compare ION to GRU, LSTM, and MLP baselines on synthetic length-gen tasks (cumsum, parity, Dyck), MNIST, depth experiments, and ablations. Results show improved length generalization and stable depth when the inductive regularizer is used; we also report a failure case (last-token prediction) where ION does not help.
 
 ---
 
@@ -8,7 +10,11 @@ Neural networks with PMI-inspired inductive consistency (ION) for length general
 
 - **Python:** 3.9 or higher  
 - **OS:** Windows, macOS, or Linux  
-- **Hardware:** CPU is enough for small runs; GPU (CUDA) recommended for full experiments  
+- **Hardware:** CPU is enough for small runs; **GPU (CUDA) recommended** for full experiments. The default config uses `device: cuda` when available.  
+- **GPU (e.g. NVIDIA RTX 3080):** For GPU use, install PyTorch with CUDA support, e.g.  
+  `pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118`  
+  (or `cu121`). Then verify:  
+  `python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else None)"`  
 - **Optional:** Bash (for `scripts/run_all_experiments.sh` and `scripts/fetch_lra_listops.sh`; on Windows you can use WSL or run the Python commands below instead)
 
 ---

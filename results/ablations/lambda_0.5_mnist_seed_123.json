@@ -1,9 +1,0 @@
-{
-  "sweep": "lambda",
-  "sweep_value": 0.5,
-  "task": "mnist",
-  "seed": 123,
-  "metric": "test_accuracy",
-  "metric_value": 0.9786027070063694,
-  "test_loss": 0.10078442079308227
-}
