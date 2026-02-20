@@ -1,0 +1,66 @@
+{
+  "models": [
+    "mlp",
+    "ion"
+  ],
+  "summaries": [
+    {
+      "model": "mlp",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1024
+      ],
+      "test_accuracy_mean": 0.967356687898089,
+      "test_accuracy_std": 0.0024950141593793034,
+      "test_accuracies": [
+        0.9699442675159236,
+        0.9675557324840764,
+        0.9696457006369427,
+        0.9646695859872612,
+        0.964968152866242
+      ],
+      "robustness_accuracy_mean": 0.95374,
+      "robustness_accuracy_std": 0.011952321950148413,
+      "robustness_accuracies": [
+        0.9582,
+        0.9502,
+        0.9702,
+        0.9374,
+        0.9527
+      ],
+      "robustness_noise_std": 0.1
+    },
+    {
+      "model": "ion",
+      "seeds": [
+        42,
+        123,
+        456,
+        789,
+        1024
+      ],
+      "test_accuracy_mean": 0.9679140127388536,
+      "test_accuracy_std": 0.003640802431891467,
+      "test_accuracies": [
+        0.9718351910828026,
+        0.96875,
+        0.9702428343949044,
+        0.9661624203821656,
+        0.9625796178343949
+      ],
+      "robustness_accuracy_mean": 0.9531600000000001,
+      "robustness_accuracy_std": 0.009451613618848373,
+      "robustness_accuracies": [
+        0.9558,
+        0.9475,
+        0.9665,
+        0.9546,
+        0.9414
+      ],
+      "robustness_noise_std": 0.1
+    }
+  ]
+}

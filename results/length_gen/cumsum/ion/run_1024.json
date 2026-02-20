@@ -1,0 +1,68 @@
+{
+  "seed": 1024,
+  "best_epoch": 1,
+  "best_val_metric": 6.068668685853481,
+  "final_train_loss": 6.187773322145017,
+  "final_val_loss": 6.072650238871574,
+  "final_val_metric": 6.072650238871574,
+  "val_mse": 6.068668685853481,
+  "history": {
+    "train_losses": [
+      10.149888865102213,
+      6.187773322145017
+    ],
+    "train_metrics": [
+      10.149477748444285,
+      6.187764561595246
+    ],
+    "val_losses": [
+      6.068668685853481,
+      6.072650238871574
+    ],
+    "val_metrics": [
+      6.068668685853481,
+      6.072650238871574
+    ],
+    "ind_losses": [
+      0.000822246181729561,
+      1.7517907220923072e-05
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "train_min_len": 10,
+    "train_max_len": 20,
+    "test_lengths": [
+      50,
+      100,
+      200
+    ],
+    "epochs": 2,
+    "lr": 0.001,
+    "batch_size": 32,
+    "task": "cumsum",
+    "vocab_size": 2,
+    "train_samples": 10000,
+    "val_samples": 1000,
+    "test_samples_per_length": 500,
+    "num_workers": 0,
+    "model": "ion",
+    "input_dim": 1,
+    "output_type": "regression",
+    "num_layers": 2,
+    "dropout": 0.0,
+    "lambda_ind": 0.5,
+    "hidden_dim": 64,
+    "p_dim": 16
+  }
+}

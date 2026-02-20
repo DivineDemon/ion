@@ -49,7 +49,10 @@ def load_length_gen_table(results_root: Path, task: str) -> Optional[pd.DataFram
     table_path = results_root / "length_gen" / task / "accuracy_vs_length_table.csv"
     if not table_path.exists():
         return None
-    df = pd.read_csv(table_path, index_col=0)
+    try:
+        df = pd.read_csv(table_path, index_col=0, encoding="utf-8")
+    except UnicodeDecodeError:
+        df = pd.read_csv(table_path, index_col=0, encoding="latin-1")
     # Columns may be '50', '100', '200' (str) or model names
     return df
 

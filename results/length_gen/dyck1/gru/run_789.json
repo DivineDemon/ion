@@ -1,0 +1,64 @@
+{
+  "seed": 789,
+  "best_epoch": 2,
+  "best_val_metric": 0.9931640625,
+  "final_train_loss": 0.07892403261849103,
+  "final_val_loss": 0.030020564037840813,
+  "final_val_metric": 0.9931640625,
+  "val_accuracy": 0.9931640625,
+  "history": {
+    "train_losses": [
+      0.2760329575935444,
+      0.07892403261849103
+    ],
+    "train_metrics": [
+      0.8582268370607029,
+      0.9794329073482428
+    ],
+    "val_losses": [
+      0.05575555845280178,
+      0.030020564037840813
+    ],
+    "val_metrics": [
+      0.9892578125,
+      0.9931640625
+    ],
+    "ind_losses": []
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "train_min_len": 10,
+    "train_max_len": 20,
+    "test_lengths": [
+      50,
+      100,
+      200
+    ],
+    "epochs": 2,
+    "lr": 0.001,
+    "batch_size": 32,
+    "task": "dyck1",
+    "valid_fraction": 0.5,
+    "train_samples": 10000,
+    "val_samples": 1000,
+    "test_samples_per_length": 500,
+    "num_workers": 0,
+    "model": "gru",
+    "hidden_dim": 64,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "input_dim": 1,
+    "output_type": "classification",
+    "num_classes": 2
+  }
+}

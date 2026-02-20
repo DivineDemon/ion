@@ -310,7 +310,7 @@ def aggregate_tables(results_root: Path) -> None:
             next(iter(model_summaries.values())).get("test_lengths", [])
         )
         table_path = task_dir / "accuracy_vs_length_table.csv"
-        with open(table_path, "w") as f:
+        with open(table_path, "w", encoding="utf-8") as f:
             header = "model," + ",".join(str(l) for l in lengths)
             f.write(header + "\n")
             for model_name, summary in sorted(model_summaries.items()):
@@ -414,6 +414,7 @@ def main() -> None:
             continue
 
         config = load_config(base_path, protocol_path, task_cfg, model_cfg)
+        config["device"] = str(device)
         if args.epochs is not None:
             config["epochs"] = args.epochs
         if args.seeds is not None:

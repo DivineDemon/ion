@@ -1,0 +1,27 @@
+{
+  "sweep": "lambda",
+  "sweep_value": 0.5,
+  "task": "cumsum",
+  "seed": 123,
+  "metric": "mean_mse",
+  "metric_value": 2916.088308016459,
+  "per_length": {
+    "50": {
+      "test_loss": 144.1014642715454,
+      "test_mse": 144.1014642715454
+    },
+    "100": {
+      "test_loss": 1281.2189407348633,
+      "test_mse": 1281.2189407348633
+    },
+    "200": {
+      "test_loss": 7322.944519042969,
+      "test_mse": 7322.944519042969
+    }
+  },
+  "lengths": [
+    50,
+    100,
+    200
+  ]
+}

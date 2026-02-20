@@ -184,6 +184,7 @@ def main():
     protocol = load_config(cfg_dir / "protocol.yaml")
     task = load_config(cfg_dir / "cumsum.yaml", cfg_dir / "cumsum_ion.yaml")
     config = _deep_merge(_deep_merge(base, protocol), task)
+    config["device"] = str(device)
     config["task"] = TASK_CUMSUM
     config["output_type"] = "regression"
     if args.epochs is not None:

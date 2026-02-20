@@ -381,6 +381,7 @@ def main() -> None:
     if not base_path.exists():
         raise FileNotFoundError(f"Need {base_path}")
     config = load_config(base_path, mnist_path)
+    config["device"] = str(device)
 
     if args.epochs is not None:
         config["epochs"] = args.epochs

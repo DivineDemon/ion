@@ -107,13 +107,15 @@ def main() -> int:
 
     for name in TABLE_NAMES:
         tex_path = TABLES_DIR / f"{name}.tex"
-        tex_path.write_text(_stub_table_tex(name), encoding="utf-8")
-        print("  table:", tex_path)
+        if not tex_path.exists():
+            tex_path.write_text(_stub_table_tex(name), encoding="utf-8")
+            print("  table:", tex_path)
 
     for name in FIGURE_NAMES:
         pdf_path = FIGURES_DIR / f"{name}.pdf"
-        _write_placeholder_pdf(pdf_path)
-        print("  figure:", pdf_path)
+        if not pdf_path.exists():
+            _write_placeholder_pdf(pdf_path)
+            print("  figure:", pdf_path)
 
     print("Done. Placeholder tables and figures written. Compile the paper with pdflatex.")
     return 0

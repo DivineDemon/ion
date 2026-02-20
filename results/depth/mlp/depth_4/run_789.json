@@ -1,0 +1,79 @@
+{
+  "seed": 789,
+  "best_epoch": 2,
+  "best_val_metric": 0.9548168789808917,
+  "final_train_loss": 0.16385080576147837,
+  "final_val_loss": 0.14904301879322454,
+  "final_val_metric": 0.9548168789808917,
+  "val_accuracy": 0.9548168789808917,
+  "history": {
+    "train_losses": [
+      0.4130827079519934,
+      0.16385080576147837
+    ],
+    "train_metrics": [
+      0.88119405370844,
+      0.9503476662404092
+    ],
+    "val_losses": [
+      0.2212336367102945,
+      0.14904301879322454
+    ],
+    "val_metrics": [
+      0.9355095541401274,
+      0.9548168789808917
+    ],
+    "ind_losses": []
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "mnist",
+    "dataset": "mnist",
+    "data_root": "data/mnist",
+    "train_size": 50000,
+    "val_size": 10000,
+    "download": true,
+    "depths": [
+      4,
+      8,
+      16,
+      32
+    ],
+    "models": [
+      "mlp",
+      "ion"
+    ],
+    "input_size": 784,
+    "hidden_dim": 256,
+    "output_size": 10,
+    "dropout": 0.0,
+    "p_dim": 32,
+    "lambda_ind": 0.0,
+    "batch_size": 64,
+    "num_workers": 0,
+    "epochs": 2,
+    "lr": 0.001,
+    "warmup_epochs": 5,
+    "max_grad_norm": 1.0,
+    "scheduler": "cosine",
+    "lambda_ind_deep": 0.15,
+    "depth_threshold_for_lambda": 16,
+    "output_type": "classification",
+    "num_classes": 10,
+    "target_accuracy_for_convergence": 0.95,
+    "model": "mlp",
+    "num_layers": 4
+  },
+  "test_accuracy": 0.9541202229299363,
+  "epochs_to_target_accuracy": 2
+}

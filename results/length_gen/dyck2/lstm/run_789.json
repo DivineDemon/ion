@@ -1,0 +1,64 @@
+{
+  "seed": 789,
+  "best_epoch": 2,
+  "best_val_metric": 0.880859375,
+  "final_train_loss": 0.34254589491187576,
+  "final_val_loss": 0.28912406601011753,
+  "final_val_metric": 0.880859375,
+  "val_accuracy": 0.880859375,
+  "history": {
+    "train_losses": [
+      0.5223882789143358,
+      0.34254589491187576
+    ],
+    "train_metrics": [
+      0.7214456869009584,
+      0.8559305111821086
+    ],
+    "val_losses": [
+      0.36434398172423244,
+      0.28912406601011753
+    ],
+    "val_metrics": [
+      0.853515625,
+      0.880859375
+    ],
+    "ind_losses": []
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "train_min_len": 10,
+    "train_max_len": 20,
+    "test_lengths": [
+      50,
+      100,
+      200
+    ],
+    "epochs": 2,
+    "lr": 0.001,
+    "batch_size": 32,
+    "task": "dyck2",
+    "valid_fraction": 0.5,
+    "train_samples": 10000,
+    "val_samples": 1000,
+    "test_samples_per_length": 500,
+    "num_workers": 0,
+    "model": "lstm",
+    "hidden_dim": 64,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "input_dim": 1,
+    "output_type": "classification",
+    "num_classes": 2
+  }
+}

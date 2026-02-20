@@ -1,0 +1,5 @@
+variant,mean_mse,std_mse,n
+F_only,3590.1816,3.5985,2
+full_ion,3590.2006,3.5847,2
+P_only,3589.7685,4.1973,2
+random_P,3590.1816,3.5985,2
