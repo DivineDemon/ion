@@ -1,0 +1,63 @@
+{
+  "seed": 123,
+  "best_epoch": 2,
+  "best_val_metric": 0.18303571428571427,
+  "final_train_loss": 2.2664239928126335,
+  "final_val_loss": 2.2429148129054477,
+  "final_val_metric": 0.18303571428571427,
+  "val_accuracy": 0.18303571428571427,
+  "history": {
+    "train_losses": [
+      2.3915009424090385,
+      2.2664239928126335
+    ],
+    "train_metrics": [
+      0.166015625,
+      0.1796875
+    ],
+    "val_losses": [
+      2.2646683965410506,
+      2.2429148129054477
+    ],
+    "val_metrics": [
+      0.16964285714285715,
+      0.18303571428571427
+    ],
+    "ind_losses": [
+      0.18005781387910247,
+      0.04253831610549241
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "listops",
+    "data_root": "data/lra",
+    "batch_size": 32,
+    "max_length": 512,
+    "num_workers": 0,
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 2,
+    "dim_feedforward": 128,
+    "max_len": 512,
+    "p_dim": 32,
+    "dropout": 0.1,
+    "epochs": 2,
+    "lr": 0.0005,
+    "lambda_ind": 0.5,
+    "warmup_epochs": 2,
+    "max_grad_norm": 1.0,
+    "scheduler": "cosine",
+    "output_type": "classification",
+    "num_classes": 10,
+    "input_dim": 17,
+    "model": "ion"
+  }
+}

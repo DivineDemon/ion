@@ -1,0 +1,14 @@
+{
+  "task": "listops",
+  "model": "transformer",
+  "seeds": [
+    42,
+    123
+  ],
+  "test_accuracy_mean": 0.17410714285714285,
+  "test_accuracy_std": 0.037880720420707906,
+  "test_accuracies": [
+    0.20089285714285715,
+    0.14732142857142858
+  ]
+}

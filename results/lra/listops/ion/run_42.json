@@ -1,0 +1,63 @@
+{
+  "seed": 42,
+  "best_epoch": 1,
+  "best_val_metric": 0.15625,
+  "final_train_loss": 2.2814009562134743,
+  "final_val_loss": 2.249969584601266,
+  "final_val_metric": 0.15625,
+  "val_accuracy": 0.15625,
+  "history": {
+    "train_losses": [
+      2.3677563443779945,
+      2.2814009562134743
+    ],
+    "train_metrics": [
+      0.146484375,
+      0.173828125
+    ],
+    "val_losses": [
+      2.235372917992728,
+      2.249969584601266
+    ],
+    "val_metrics": [
+      0.15625,
+      0.15625
+    ],
+    "ind_losses": [
+      0.14559068786911666,
+      0.043631505337543786
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123
+    ],
+    "device": "cpu",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "listops",
+    "data_root": "data/lra",
+    "batch_size": 32,
+    "max_length": 512,
+    "num_workers": 0,
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 2,
+    "dim_feedforward": 128,
+    "max_len": 512,
+    "p_dim": 32,
+    "dropout": 0.1,
+    "epochs": 2,
+    "lr": 0.0005,
+    "lambda_ind": 0.5,
+    "warmup_epochs": 2,
+    "max_grad_norm": 1.0,
+    "scheduler": "cosine",
+    "output_type": "classification",
+    "num_classes": 10,
+    "input_dim": 17,
+    "model": "ion"
+  }
+}

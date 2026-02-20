@@ -1,0 +1,14 @@
+{
+  "task": "listops",
+  "model": "ion",
+  "seeds": [
+    42,
+    123
+  ],
+  "test_accuracy_mean": 0.16294642857142855,
+  "test_accuracy_std": 0.015783633508628294,
+  "test_accuracies": [
+    0.15178571428571427,
+    0.17410714285714285
+  ]
+}

@@ -2,16 +2,16 @@
   "seed": 42,
   "per_length": {
     "50": {
-      "test_loss": 0.046419310790952295,
-      "test_accuracy": 0.98828125
+      "test_loss": 0.11669433349743485,
+      "test_accuracy": 0.998046875
     },
     "100": {
-      "test_loss": 2.8347437754273415,
-      "test_accuracy": 0.47226562537252903
+      "test_loss": 4.046127602458,
+      "test_accuracy": 0.5078125
     },
     "200": {
-      "test_loss": 4.308693662285805,
-      "test_accuracy": 0.4652343764901161
+      "test_loss": 4.245204791426659,
+      "test_accuracy": 0.5003906264901161
     }
   },
   "lengths": [
@@ -19,5 +19,5 @@
     100,
     200
   ],
-  "mean_accuracy": 0.641927083954215
+  "mean_accuracy": 0.6687500004967054
 }
