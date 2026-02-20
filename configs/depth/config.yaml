@@ -1,0 +1,53 @@
+# Depth-stability experiment: MLP depths 4, 8, 16, 32.
+# Baseline (MLP) vs universal ION; same width; 5 seeds per (depth, model).
+# Merge with base.yaml and mnist.yaml for data/training defaults.
+
+task: depth
+
+# Dataset: MNIST (same as MNIST experiment)
+dataset: mnist
+data_root: data/mnist
+train_size: 50000
+val_size: 10000
+download: true
+
+# Depths to sweep (number of hidden layers)
+depths: [4, 8, 16, 32]
+
+# Models: baseline MLP and universal ION
+models: [mlp, ion]
+
+# MLP/ION architecture (width fixed across depths)
+input_size: 784
+hidden_dim: 256
+output_size: 10
+dropout: 0.0
+
+# ION-specific (universal)
+p_dim: 32
+lambda_ind: 0.5
+
+# Training (same for all depth/model runs)
+batch_size: 64
+num_workers: 0
+epochs: 20
+lr: 0.001
+# Stabilize deep ION: warmup, grad clip, smaller lambda at high depth
+warmup_epochs: 5
+max_grad_norm: 1.0
+scheduler: cosine
+# For depth >= 16, ION uses this smaller lambda to avoid invariant collapse (diagnosis showed L_ind -> 0)
+lambda_ind_deep: 0.15
+depth_threshold_for_lambda: 16
+
+# Seeds: 5 runs per (depth, model) — from base runs_per_experiment
+# seeds loaded from base or explicitly list below
+# seeds: [42, 123, 456, 789, 1024]
+
+# Output
+output_type: classification
+num_classes: 10
+
+# Optional: convergence metric (epochs to reach this val accuracy)
+# Used for optional convergence table in results
+target_accuracy_for_convergence: 0.95

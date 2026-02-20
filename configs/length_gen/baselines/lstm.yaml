@@ -1,0 +1,9 @@
+# LSTM baseline architecture for length-generalization tasks.
+# Merge with base.yaml and a task config (e.g. cumsum.yaml, parity.yaml).
+
+model: lstm
+
+# Architecture
+hidden_dim: 64
+num_layers: 2
+dropout: 0.0

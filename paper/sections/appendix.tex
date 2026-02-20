@@ -1,0 +1,53 @@
+\appendix
+\section{Hyperparameters and Reproducibility}
+\label{app:hyperparams}
+
+Table~\ref{tab:hyperparams-length} and Table~\ref{tab:hyperparams-depth} summarize default hyperparameters for length-generalization and depth-stability experiments. All runs use a fixed global seed (e.g.\ 42) and per-run seeds (e.g.\ 42, 123, 456, 789, 1024); we fix the random seeds for PyTorch, NumPy, and Python at the start of each run.
+
+\textbf{Reproducibility.} Code and configuration files are in the repository. \textbf{Environment:} Python 3.9+ with PyTorch, numpy, pyyaml, matplotlib, pandas; scipy optional (for $p$-values). \textbf{Seeds:} We use 5 run seeds per condition: 42, 123, 456, 789, 1024 (see repository for configuration). \textbf{Run time:} The full suite (length generalization, MNIST, depth, ablations, mechanistic ablations, drift) takes on the order of several hours on a single GPU; CPU-only runs are slower. \textbf{One-command reproduction:} A single script runs all experiments; a second step generates figures and tables (see repository). \textbf{Artifacts:} The pipeline produces length-generalization metrics per task, MNIST test accuracy, depth accuracy, and LaTeX tables and figures used in this paper. \textbf{Depth collapse and mitigation:} Without mitigations, ION at depth 16 can collapse (invariant $\to$ constant, $\mathcal{L}_{\mathrm{ind}} \to 0$, accuracy $\approx$ random). We use 5 epochs of learning-rate warmup, gradient norm clipping (max norm 1.0), cosine LR schedule, and for depth $\geq 16$ a reduced inductive weight $\lambda = 0.15$. A diagnostic with fewer epochs is available in the repository for a quick check.
+
+\begin{table}[ht]
+\centering
+\caption{Representative hyperparameters for length-generalization experiments (cumulative sum, parity, Dyck). Train lengths 10--20; test lengths 50, 100, 200.}
+\label{tab:hyperparams-length}
+\begin{tabular}{ll}
+\toprule
+Setting & Value \\
+\midrule
+Optimizer & Adam \\
+Learning rate & $1 \times 10^{-3}$ \\
+Batch size & 64 \\
+Epochs & 50--100 \\
+$h_{\mathrm{dim}}$ (hidden) & 64--128 \\
+$p_{\mathrm{dim}}$ (invariant) & 8--32 \\
+$\lambda$ (inductive weight) & 0.3--0.7 \\
+Seeds per (model, task) & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\centering
+\caption{Representative hyperparameters for depth-stability (MNIST MLP) and MNIST classification.}
+\label{tab:hyperparams-depth}
+\begin{tabular}{ll}
+\toprule
+Setting & Value \\
+\midrule
+Optimizer & Adam \\
+Learning rate & $1 \times 10^{-3}$ \\
+Batch size & 128 \\
+Epochs & 20--30 \\
+Width (per layer) & 256 \\
+Depths & 4, 8, 16, 32 \\
+$p_{\mathrm{dim}}$ (universal ION) & 16--32 \\
+$\lambda$ & 0.5 \\
+Seeds per (depth, model) & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Additional Material}
+\label{app:extra}
+
+Further plots (e.g.\ invariant drift vs.\ step for multiple lengths, loss curves for all seeds) and extended ablation tables can be generated from the experiment outputs using the provided analysis code. A theoretical perspective (invariant error and extrapolation bound) is given in Section~\ref{sec:method:theory}.

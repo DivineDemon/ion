@@ -1,0 +1,9 @@
+{
+  "variant": "full_ion",
+  "seeds": [
+    42
+  ],
+  "mean_mse": 3551.1642875671387,
+  "std_mse": 0.0,
+  "n": 1
+}

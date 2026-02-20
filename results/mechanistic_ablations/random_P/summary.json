@@ -1,0 +1,9 @@
+{
+  "variant": "random_P",
+  "seeds": [
+    42
+  ],
+  "mean_mse": 3551.1628818511963,
+  "std_mse": 0.0,
+  "n": 1
+}

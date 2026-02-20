@@ -1,0 +1,39 @@
+{
+  "seed": 42,
+  "best_epoch": 1,
+  "best_val_metric": 0.5178571428571429,
+  "final_train_loss": 0.7114817500114441,
+  "final_val_loss": 0.6930219105311802,
+  "final_val_metric": 0.5178571428571429,
+  "val_accuracy": 0.5178571428571429,
+  "history": {
+    "train_losses": [
+      0.7501951050758362,
+      0.7114817500114441
+    ],
+    "train_metrics": [
+      0.445,
+      0.55
+    ],
+    "val_losses": [
+      0.6931260568755013,
+      0.6930219105311802
+    ],
+    "val_metrics": [
+      0.5178571428571429,
+      0.5178571428571429
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "device": "cpu",
+    "output_root": "results",
+    "task": "parity",
+    "model": "ion",
+    "epochs": 2,
+    "lr": 0.001,
+    "output_type": "classification",
+    "num_classes": 2,
+    "lambda_ind": 0.5
+  }
+}

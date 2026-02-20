@@ -1,0 +1,60 @@
+{
+  "seed": 42,
+  "best_epoch": 1,
+  "best_val_metric": 1.0,
+  "final_train_loss": 0.00013570890970845758,
+  "final_val_loss": 8.568997805014078e-05,
+  "final_val_metric": 1.0,
+  "val_accuracy": 1.0,
+  "history": {
+    "train_losses": [
+      0.025793071059774558,
+      0.00013570890970845758
+    ],
+    "train_metrics": [
+      0.9937100638977636,
+      1.0
+    ],
+    "val_losses": [
+      0.00021581782448265585,
+      8.568997805014078e-05
+    ],
+    "val_metrics": [
+      1.0,
+      1.0
+    ],
+    "ind_losses": []
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42
+    ],
+    "device": "cuda",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "train_min_len": 10,
+    "train_max_len": 20,
+    "test_lengths": [
+      50,
+      100,
+      200
+    ],
+    "epochs": 2,
+    "lr": 0.001,
+    "batch_size": 32,
+    "task": "dyck1",
+    "valid_fraction": 0.5,
+    "train_samples": 10000,
+    "val_samples": 1000,
+    "test_samples_per_length": 500,
+    "num_workers": 0,
+    "model": "gru",
+    "hidden_dim": 64,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "input_dim": 1,
+    "output_type": "classification",
+    "num_classes": 2
+  }
+}

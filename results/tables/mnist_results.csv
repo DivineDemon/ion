@@ -1,0 +1,3 @@
+model,test_accuracy_mean,test_accuracy_std,n,robustness_accuracy_mean,robustness_accuracy_std
+mlp,0.967357,0.000000,1,0.961500,0.000000
+ion,0.967556,0.000000,1,0.959800,0.000000

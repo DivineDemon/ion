@@ -1,0 +1,17 @@
+# Length-generalization experiment protocol (Phase A6).
+# Merge with base.yaml and task + model configs.
+# Train lengths 10-20 (no overlap with test); test lengths 50, 100, 200.
+# Minimum 5 seeds per (model, task).
+
+train_min_len: 10
+train_max_len: 20
+test_lengths: [50, 100, 200]
+
+# 5 seeds per model (plan: "at least 5 runs per (model, task, config)")
+seeds: [42, 123, 456, 789, 1024]
+runs_per_experiment: 5
+
+# Training defaults for length-gen
+epochs: 50
+lr: 0.001
+batch_size: 32

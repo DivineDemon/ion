@@ -1,0 +1,16 @@
+# Last-token (memoryless) task: predict the last input symbol only.
+# No inductive structure; ION is not expected to help (failure-case experiment).
+
+task: last_token
+
+train_min_len: 10
+train_max_len: 20
+test_lengths: [50, 100, 200]
+
+vocab_size: 2
+train_samples: 10000
+val_samples: 1000
+test_samples_per_length: 500
+
+batch_size: 32
+num_workers: 0

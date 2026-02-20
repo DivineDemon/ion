@@ -1,0 +1,21 @@
+# Cumulative sum + ION (recurrent). Merge with base + protocol + cumsum task.
+# hidden_dim / p_dim can be set by param-matching to GRU in runner.
+task: cumsum
+model: ion
+train_min_len: 10
+train_max_len: 20
+test_lengths: [50, 100, 200]
+vocab_size: 2
+train_samples: 10000
+val_samples: 1000
+test_samples_per_length: 500
+batch_size: 32
+num_workers: 0
+input_dim: 1
+output_type: regression
+num_layers: 2
+dropout: 0.0
+lambda_ind: 0.5
+# Param matching will set hidden_dim, p_dim to match GRU
+hidden_dim: 64
+p_dim: 16

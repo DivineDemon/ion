@@ -1,0 +1,76 @@
+{
+  "seed": 42,
+  "best_epoch": 2,
+  "best_val_metric": 0.48002373417721517,
+  "final_train_loss": 1.5153225397860461,
+  "final_val_loss": 1.478857532332215,
+  "final_val_metric": 0.48002373417721517,
+  "val_accuracy": 0.48002373417721517,
+  "history": {
+    "train_losses": [
+      1.706826361912218,
+      1.5153225397860461
+    ],
+    "train_metrics": [
+      0.39537464488636365,
+      0.46546519886363635
+    ],
+    "val_losses": [
+      1.5765190365948254,
+      1.478857532332215
+    ],
+    "val_metrics": [
+      0.4392800632911392,
+      0.48002373417721517
+    ],
+    "ind_losses": [
+      0.014032011371455155,
+      0.009617743121370122
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42
+    ],
+    "device": "cuda",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "depth",
+    "dataset": "cifar",
+    "data_root": "data/cifar10",
+    "train_size": 45000,
+    "val_size": 5000,
+    "download": true,
+    "depths": [
+      4,
+      8,
+      16,
+      32
+    ],
+    "models": [
+      "mlp",
+      "ion"
+    ],
+    "input_size": 3072,
+    "hidden_dim": 256,
+    "output_size": 10,
+    "dropout": 0.0,
+    "p_dim": 32,
+    "lambda_ind": 0.5,
+    "batch_size": 64,
+    "num_workers": 0,
+    "epochs": 2,
+    "lr": 0.001,
+    "warmup_epochs": 5,
+    "max_grad_norm": 1.0,
+    "scheduler": "cosine",
+    "lambda_ind_deep": 0.15,
+    "depth_threshold_for_lambda": 16,
+    "output_type": "classification",
+    "num_classes": 10,
+    "target_accuracy_for_convergence": 0.7
+  },
+  "test_accuracy": 0.48258359872611467,
+  "epochs_to_target_accuracy": null
+}

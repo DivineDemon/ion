@@ -1,0 +1,63 @@
+{
+  "seed": 42,
+  "best_epoch": 2,
+  "best_val_metric": 0.9682523885350318,
+  "final_train_loss": 0.11531531545595573,
+  "final_val_loss": 0.10882787469323653,
+  "final_val_metric": 0.9682523885350318,
+  "val_accuracy": 0.9682523885350318,
+  "history": {
+    "train_losses": [
+      0.32736248629467796,
+      0.11531531545595573
+    ],
+    "train_metrics": [
+      0.8978980179028133,
+      0.9654331841432225
+    ],
+    "val_losses": [
+      0.16013087021412364,
+      0.10882787469323653
+    ],
+    "val_metrics": [
+      0.9540207006369427,
+      0.9682523885350318
+    ],
+    "ind_losses": [
+      0.005721493536318221,
+      0.0013503697641995376
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      1024
+    ],
+    "device": "cuda",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "mnist",
+    "data_root": "data/mnist",
+    "train_size": 50000,
+    "val_size": 10000,
+    "download": true,
+    "batch_size": 64,
+    "num_workers": 0,
+    "epochs": 2,
+    "lr": 0.001,
+    "lambda_ind": 0.5,
+    "model": "ion",
+    "input_size": 784,
+    "hidden_dim": 256,
+    "num_layers": 4,
+    "output_size": 10,
+    "dropout": 0.0,
+    "p_dim": 4,
+    "output_type": "classification",
+    "num_classes": 10
+  }
+}

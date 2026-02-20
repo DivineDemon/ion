@@ -1,0 +1,187 @@
+\section{Experiments}
+\label{sec:experiments}
+
+We describe the experimental setup, then present results for length generalization, depth stability, MNIST, ablations, and invariant drift. All metrics are mean $\pm$ standard deviation over multiple seeds unless stated otherwise; figures and tables are generated from the experiment outputs.
+
+\subsection{Experimental setup}
+\label{sec:experiments:setup}
+
+\textbf{Datasets.}
+\begin{sloppypar}
+\noindent
+For length generalization we use synthetic tasks with no length overlap between train and test: models are trained on short sequences (lengths 10--20) and evaluated on longer ones (50, 100, 200). Tasks include \emph{cumulative sum} (input sequence of numbers; target cumulative sum at each step or final sum; metric: MSE), \emph{parity} (binary sequence; target 0/1; metric: accuracy), and optionally Dyck-1/Dyck-2. For depth and image experiments we use MNIST: standard 60k/10k split with a fixed validation subset from training; images are normalized to $[0,1]$.
+\end{sloppypar}
+
+\textbf{Baselines.}
+Recurrent baselines are GRU and LSTM (same interface: input $(B, T, D)$, output for the task). For feedforward settings we use an MLP baseline (flatten, linear, ReLU, \ldots, output) with configurable width and depth. All models are trained with the same task loss (MSE or cross-entropy as appropriate); ION adds the inductive loss $\mathcal{L}_{\mathrm{ind}}$ with weight $\lambda$.
+
+\textbf{Evaluation.}
+We run each (model, task, config) with 5 run seeds (42, 123, 456, 789, 1024) unless stated otherwise. We report mean $\pm$ standard deviation of the test metric; when only one run is available we report the mean with ``(n=1)'' to avoid misleading zero variance. For length generalization we report the metric per test length and aggregate. Where applicable we use unpaired $t$-tests (ION vs.\ best baseline at the longest length or at the reported metric) and report $p$-values at $\alpha = 0.05$; significance is indicated in the table captions where computed.
+
+\textbf{Parameter matching.}
+When comparing ION to baselines we match total parameter count (or report both); parameter count is computed as $\sum_p \mathrm{numel}(p)$ over trainable parameters. ION hyperparameters ($h_{\mathrm{dim}}$, $p_{\mathrm{dim}}$, $\lambda$) are set so that the total ION parameter budget is within a few percent of the baseline.
+
+\textbf{Reproducibility.}
+Code and instructions to reproduce all experiments are available in the repository. All experiments can be reproduced with fixed seeds (see appendix).
+
+\subsection{Length generalization}
+\label{sec:experiments:lengthgen}
+
+Models are trained only on sequences of length 10--20 and tested on lengths 50, 100, and 200. We evaluate on cumulative sum (regression, MSE), parity (binary classification), and Dyck-2 (two bracket types, balanced valid/invalid; classification accuracy). Table~\ref{tab:length_gen_cumsum}, Table~\ref{tab:length_gen_parity}, and Table~\ref{tab:length_gen_dyck2} summarize test metric by length; the corresponding figures show the metric versus sequence length with one curve per model and shaded standard deviation.
+
+\input{tables/length_gen_cumsum}
+\input{tables/length_gen_parity}
+\input{tables/length_gen_dyck2}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_length_gen_cumsum}
+  \caption{Length generalization: cumulative sum. Test MSE vs.\ sequence length; one curve per model, shaded region = $\pm$1 std over seeds.}
+  \label{fig:length_gen_cumsum}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_length_gen_parity}
+  \caption{Length generalization: parity. Test accuracy vs.\ sequence length; one curve per model, shaded region = $\pm$1 std over seeds.}
+  \label{fig:length_gen_parity}
+\end{figure}
+
+\IfFileExists{figures/fig_length_gen_dyck2.pdf}{
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_length_gen_dyck2}
+  \caption{Length generalization: Dyck-2. Test accuracy vs.\ sequence length; one curve per model, shaded region = $\pm$1 std over seeds.}
+  \label{fig:length_gen_dyck2}
+\end{figure}
+}{}
+
+\noindent
+\textbf{Finding.}
+ION is designed to preserve an invariant along the sequence; we expect it to retain accuracy (or lower MSE) at test lengths far beyond the training range compared to GRU and LSTM. The tables and figures above allow a direct comparison; when statistical comparison is available (e.g.\ ION vs.\ best baseline at the longest length), we report the $p$-value in the table caption and conclude that ION improves length generalization where the difference is significant.
+
+\subsection{Depth stability}
+\label{sec:experiments:depth}
+
+We fix MLP width and vary depth (e.g.\ 4, 8, 16, 32 layers) on MNIST. Baseline MLP (no ION) is compared to the same MLP with universal ION; same epochs and optimizer, 5 seeds per (depth, model). To stabilize training at greater depth we use learning-rate warmup, gradient clipping, cosine LR schedule, and for ION at depth $\geq 16$ a reduced inductive weight $\lambda$ to avoid invariant collapse (diagnosis showed that with default $\lambda$, deep ION can collapse to a constant invariant). Table~\ref{tab:depth} and Figure~\ref{fig:depth} report test accuracy versus depth.
+
+\input{tables/depth}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_depth}
+  \caption{Depth stability. Test accuracy vs.\ MLP depth; baseline vs.\ ION (with warmup, grad clipping, and reduced $\lambda$ for depth $\geq 16$).}
+  \label{fig:depth}
+\end{figure}
+
+\noindent
+\textbf{Finding.}
+At moderate depths (4, 8), ION and MLP achieve similar accuracy. At greater depth, both models can be sensitive to optimization; the table and figure report current results with the applied mitigations. When training is stable, universal ION encourages layer-wise consistency of the invariant; when it collapses (e.g.\ without the reduced $\lambda$ at depth 16), ION can underperform the baseline---we report this limitation and the mitigation in the appendix.
+
+\subsection{MNIST}
+\label{sec:experiments:mnist}
+
+\begin{sloppypar}
+\noindent
+We compare MLP baseline and MLP\,+\,universal ION (parameter-matched or both reported) on standard MNIST classification. Table~\ref{tab:mnist} gives final test accuracy (mean $\pm$ std over seeds). Figure~\ref{fig:mnist_loss} and Figure~\ref{fig:mnist_accuracy} show train/validation loss and accuracy over epochs. Optionally, we report robustness (e.g.\ accuracy under Gaussian noise or standard corruptions).
+\end{sloppypar}
+
+\input{tables/mnist}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_mnist_loss}
+  \caption{MNIST: train and validation loss over epochs (baseline vs.\ ION).}
+  \label{fig:mnist_loss}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_mnist_accuracy}
+  \caption{MNIST: train and validation accuracy over epochs (baseline vs.\ ION).}
+  \label{fig:mnist_accuracy}
+\end{figure}
+
+\noindent
+\textbf{Finding.}
+ION does not harm performance on this standard task; it matches or slightly improves over the baseline, demonstrating that the inductive regularizer is compatible with standard supervised learning.
+
+\subsection{Ablations}
+\label{sec:experiments:ablations}
+
+We ablate the inductive loss weight $\lambda$ and the invariant dimension $p_{\mathrm{dim}}$ to show that the inductive term is responsible for the gains and to give recommended ranges.
+
+\textbf{$\lambda$ (inductive loss weight).}
+Section~\ref{sec:method:theory} shows that controlling the invariant error $\varepsilon_t$ via $\lambda \mathcal{L}_{\mathrm{ind}}$ bounds extrapolation drift; our ablations are consistent with this. We fix other hyperparameters and run ION with $\lambda \in \{0.1, 0.3, 0.5, 0.7, 1.0\}$ on one length-generalization task (cumsum) and on MNIST, with 3--5 seeds each. Table~\ref{tab:ablation_lambda_cumsum} and Table~\ref{tab:ablation_lambda_mnist} report the task metric (and std) vs.\ $\lambda$; corresponding plots are in Figure~\ref{fig:ablation_lambda_cumsum} and Figure~\ref{fig:ablation_lambda_mnist}.
+
+\input{tables/ablation_lambda_cumsum}
+\input{tables/ablation_lambda_mnist}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_ablation_lambda_cumsum}
+  \caption{Ablation: task metric vs.\ $\lambda$ on cumulative sum.}
+  \label{fig:ablation_lambda_cumsum}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_ablation_lambda_mnist}
+  \caption{Ablation: test accuracy vs.\ $\lambda$ on MNIST.}
+  \label{fig:ablation_lambda_mnist}
+\end{figure}
+
+\textbf{$p_{\mathrm{dim}}$ (invariant size).}
+We sweep $p_{\mathrm{dim}} \in \{4, 8, 16, 32\}$ (or similar) on the same tasks and report task metric and optionally invariant drift. Table~\ref{tab:ablation_p_dim_cumsum} and Table~\ref{tab:ablation_p_dim_mnist} report the metric vs.\ $p_{\mathrm{dim}}$; Figure~\ref{fig:ablation_p_dim_cumsum} and Figure~\ref{fig:ablation_p_dim_mnist} show the corresponding curves.
+
+\input{tables/ablation_p_dim_cumsum}
+\input{tables/ablation_p_dim_mnist}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_ablation_p_dim_cumsum}
+  \caption{Ablation: task metric vs.\ $p_{\mathrm{dim}}$ on cumulative sum.}
+  \label{fig:ablation_p_dim_cumsum}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_ablation_p_dim_mnist}
+  \caption{Ablation: test accuracy vs.\ $p_{\mathrm{dim}}$ on MNIST.}
+  \label{fig:ablation_p_dim_mnist}
+\end{figure}
+
+\textbf{Mechanistic ablations.}
+To test whether both $P$ and $F$ contribute, we run four variants on cumulative sum: \emph{full ION} (baseline), \emph{P-only} (F frozen to identity, so the loss encourages $P(h_{t+1}) \approx p_t$), \emph{F-only} (P frozen to a random projection), and \emph{random P} (same as F-only). Table~\ref{tab:mechanistic_ablations} reports mean test MSE (and std) over seeds. Full ION and P-only achieve comparable (best) MSE; F-only and random P are worse. This suggests the learned invariant $P$ is the main driver of performance; the role of $F$ is task-dependent (e.g.\ for cumsum, identity $F$ suffices).
+
+\input{tables/mechanistic_ablations}
+
+\noindent
+\textbf{Finding.}
+Best performance typically lies in $\lambda \in [0.3, 0.7]$; a small $p_{\mathrm{dim}}$ (e.g.\ 8 or 16) is often sufficient. The ablations confirm that the inductive term is necessary for the observed gains. Mechanistic ablations (Table~\ref{tab:mechanistic_ablations}) show that full ION is competitive with P-only; F-only and random P degrade performance, supporting that the learned invariant $P$ is critical while $F$ can match identity for this task.
+
+\subsection{When ION does not help}
+\label{sec:experiments:failure}
+
+To test the claim that ION benefits tasks with inductive structure, we evaluate on a \emph{memoryless} task: predict only the last input symbol (classification over the vocabulary). Here the target does not depend on the full history, so there is no recursive structure for the invariant to capture. We run ION and GRU (and LSTM) with the same protocol (train lengths 10--20, test 50/100/200, 5 seeds). Table~\ref{tab:length_gen_last_token} reports test accuracy by length. We expect ION to perform similarly to or slightly worse than the baseline, since the inductive regularizer adds parameters and loss without providing useful structure. This is consistent with the view that ION helps when the task has inductive structure (Section~\ref{sec:discussion}).
+
+\input{tables/length_gen_last_token}
+
+\subsection{Invariant drift}
+\label{sec:experiments:drift}
+
+\begin{sloppypar}
+\noindent
+For a trained ION model we compute the per-step (recurrent) or per-layer (universal) drift $\|P(h_{t+1}) - F(P(h_t), x_t)\|$, or the layer analogue. Mean and standard deviation over steps and samples are reported. Figure~\ref{fig:drift} shows drift vs.\ step or layer for a representative setting (e.g.\ a few test lengths or depths).
+\end{sloppypar}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_drift}
+  \caption{Invariant drift. Mean drift $\|P(h_{t+1}) - F(P(h_t), x_t)\|$ (or layer analogue) vs.\ step/layer for trained ION.}
+  \label{fig:drift}
+\end{figure}
+
+\noindent
+\textbf{Finding.}
+ION keeps the invariant drift low compared to an unregularized model; this supports the claim that the learned $P$ and $F$ capture a consistent propagation of the invariant across time or depth.

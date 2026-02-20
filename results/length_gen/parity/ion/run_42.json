@@ -1,0 +1,64 @@
+{
+  "seed": 42,
+  "best_epoch": 1,
+  "best_val_metric": 0.49609375,
+  "final_train_loss": 0.6936507482117358,
+  "final_val_loss": 0.6933310329914093,
+  "final_val_metric": 0.49609375,
+  "val_accuracy": 0.49609375,
+  "history": {
+    "train_losses": [
+      0.6946438215791989,
+      0.6936507482117358
+    ],
+    "train_metrics": [
+      0.5003993610223643,
+      0.49550718849840253
+    ],
+    "val_losses": [
+      0.6935276407748461,
+      0.6933310329914093
+    ],
+    "val_metrics": [
+      0.49609375,
+      0.49609375
+    ],
+    "ind_losses": [
+      0.0009879235733587673,
+      1.41465311687894e-05
+    ]
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42
+    ],
+    "device": "cuda",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "train_min_len": 10,
+    "train_max_len": 20,
+    "test_lengths": [
+      50,
+      100,
+      200
+    ],
+    "epochs": 2,
+    "lr": 0.001,
+    "batch_size": 32,
+    "task": "parity",
+    "train_samples": 10000,
+    "val_samples": 1000,
+    "test_samples_per_length": 500,
+    "num_workers": 0,
+    "model": "ion",
+    "input_dim": 1,
+    "output_type": "classification",
+    "num_classes": 2,
+    "num_layers": 2,
+    "dropout": 0.0,
+    "lambda_ind": 0.5,
+    "hidden_dim": 64,
+    "p_dim": 16
+  }
+}

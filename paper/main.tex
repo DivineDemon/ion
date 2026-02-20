@@ -1,0 +1,36 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\usepackage{url}
+
+% Figures in figures/
+\graphicspath{{figures/}}
+
+\title{ION: Inductive Invariants for Length Generalization and Depth Stability}
+\author{Anonymous Authors}
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/introduction}
+\input{sections/related_work}
+\input{sections/method}
+\input{sections/experiments}
+\input{sections/discussion}
+\input{sections/conclusion}
+\input{sections/appendix}
+
+\clearpage  % Flush pending floats so no table/figure lands in the references
+\bibliographystyle{plainnat}
+\bibliography{refs}
+
+\end{document}

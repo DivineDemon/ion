@@ -1,0 +1,59 @@
+{
+  "seed": 42,
+  "best_epoch": 2,
+  "best_val_metric": 0.36607142857142855,
+  "final_train_loss": 1.7152821662823359,
+  "final_val_loss": 1.6753796622866677,
+  "final_val_metric": 0.36607142857142855,
+  "val_accuracy": 0.36607142857142855,
+  "history": {
+    "train_losses": [
+      2.0810484820604325,
+      1.7152821662823359
+    ],
+    "train_metrics": [
+      0.23963541666666666,
+      0.35770833333333335
+    ],
+    "val_losses": [
+      1.7386352561769032,
+      1.6753796622866677
+    ],
+    "val_metrics": [
+      0.34871031746031744,
+      0.36607142857142855
+    ],
+    "ind_losses": []
+  },
+  "config": {
+    "seed": 42,
+    "seeds": [
+      42
+    ],
+    "device": "cuda",
+    "output_root": "results",
+    "runs_per_experiment": 5,
+    "task": "listops",
+    "data_root": "data/lra",
+    "batch_size": 32,
+    "max_length": 512,
+    "num_workers": 0,
+    "d_model": 64,
+    "nhead": 4,
+    "num_layers": 2,
+    "dim_feedforward": 128,
+    "max_len": 512,
+    "p_dim": 32,
+    "dropout": 0.1,
+    "epochs": 2,
+    "lr": 0.0005,
+    "lambda_ind": 0.5,
+    "warmup_epochs": 2,
+    "max_grad_norm": 1.0,
+    "scheduler": "cosine",
+    "output_type": "classification",
+    "num_classes": 10,
+    "input_dim": 26,
+    "model": "transformer"
+  }
+}

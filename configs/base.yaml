@@ -1,0 +1,15 @@
+# Base config: defaults for all experiments.
+# Override in task-specific configs (e.g. configs/length_gen/, configs/mnist.yaml).
+
+# Reproducibility: 5 seeds per (model, task, config) for statistical rigor
+seed: 42
+seeds: [42, 123, 456, 789, 1024]
+
+# Compute
+device: cuda  # set to "cpu" if no GPU
+
+# Output
+output_root: results
+
+# Experiment protocol
+runs_per_experiment: 5  # number of seeds per (model, task, config)

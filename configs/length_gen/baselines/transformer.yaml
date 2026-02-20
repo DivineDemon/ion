@@ -1,0 +1,12 @@
+# Transformer (encoder-only) baseline for length-generalization tasks.
+# Merge with base.yaml and a task config. Use count_parameters() to match GRU/LSTM if needed.
+
+model: transformer
+
+# Architecture
+d_model: 64
+nhead: 4
+num_layers: 2
+dim_feedforward: 256
+max_len: 512
+dropout: 0.1

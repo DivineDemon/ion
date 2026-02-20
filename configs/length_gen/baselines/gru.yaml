@@ -1,0 +1,11 @@
+# GRU baseline architecture for length-generalization tasks.
+# Merge with base.yaml and a task config (e.g. cumsum.yaml, parity.yaml).
+
+model: gru
+
+# Architecture (same interface for all length-gen tasks)
+hidden_dim: 64
+num_layers: 2
+dropout: 0.0
+
+# input_dim and output_type/num_classes are set from task (e.g. cumsum -> regression; parity/dyck -> classification, 2 classes)

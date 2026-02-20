@@ -1,0 +1,17 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Standard neural networks excel on in-distribution data but frequently fail when the structure of the problem extends beyond what was seen at train time. In sequence modeling, models trained on short sequences often do not generalize to longer ones; in feedforward networks, increasing depth can lead to vanishing or exploding gradients and reduced accuracy. In both cases, a central issue is that representations are not constrained to propagate in a structured way across time steps or layers. We argue that the \emph{principle of mathematical induction} (PMI)---if a property holds at an index and is preserved by a transition, it holds for all subsequent indices---provides a useful design principle for such structure.
+
+We interpret PMI in a learned setting: suppose that at each step or layer we can summarize the hidden state by an \emph{invariant} $p$. If $p$ evolves according to a simple, explicit rule $F$ (e.g., $p_{t+1} = F(p_t, x_t)$ in the recurrent case), then propagating $p$ is consistent with induction: once the rule and initial value are fixed, the trajectory is determined. We do not require the rule to be hand-designed; we learn both a map $P$ from hidden state to invariant and a transition $F$, and we encourage the actual dynamics to follow this rule by adding an \emph{inductive loss} $\mathcal{L}_{\mathrm{ind}}$ that penalizes $\|P(h_{t+1}) - F(P(h_t), x_t)\|^2$ (or its layer-wise analogue). The total loss is $\mathcal{L} = \mathcal{L}_{\mathrm{task}} + \lambda \mathcal{L}_{\mathrm{ind}}$, so the model is trained to solve the task while keeping the invariant trajectory consistent.
+
+We call this framework \textbf{ION} (Inductive invariant for Ordered Networks). ION can be applied to recurrent models (where the index is time) and to feedforward networks (where the index is layer depth); in the latter case we refer to \emph{universal ION}. In both settings, the same ingredients appear: a summary map $P$, a transition $F$, and a regularizer that ties consecutive summaries to the rule. No change to the underlying architecture (e.g., GRU or MLP) is required beyond adding the $P$ and $F$ modules and the inductive term in the loss.
+
+Our contributions are as follows:
+\begin{itemize}
+  \item We introduce ION, a PMI-inspired training framework that enforces inductive consistency of a learned invariant across time (recurrent) or depth (feedforward), with a single formulation and loss.
+  \item We provide a \emph{universal} (layer-depth) variant of ION for feedforward networks and show how to integrate it with standard MLPs.
+  \item We run experiments on length-generalization tasks (cumulative sum, parity, Dyck-2) and on depth stability and MNIST, with parameter-matched baselines (GRU, LSTM, MLP) and 5 seeds per condition.
+  \item We report results demonstrating competitive length generalization and maintained or matched accuracy at moderate depth with ION (with $p$-values where applicable), plus ablations on $\lambda$ and $p_{\mathrm{dim}}$ and analysis of invariant drift.
+\end{itemize}
+The rest of the paper is organized as follows: \S\ref{sec:related} reviews related work; \S\ref{sec:method} formalizes recurrent and universal ION; \S\ref{sec:experiments} presents experiments and results; \S\ref{sec:discussion} and \S\ref{sec:conclusion} discuss limitations and conclude.

@@ -1,0 +1,17 @@
+task: last_token
+model: lstm
+train_min_len: 10
+train_max_len: 20
+test_lengths: [50, 100, 200]
+train_samples: 10000
+val_samples: 1000
+test_samples_per_length: 500
+batch_size: 32
+num_workers: 0
+hidden_dim: 64
+num_layers: 2
+dropout: 0.0
+input_dim: 1
+output_type: classification
+num_classes: 2
+vocab_size: 2

@@ -1,0 +1,29 @@
+# LRA ListOps: long-sequence classification (10 classes).
+# Merge with base.yaml. Models: transformer (baseline), ion (ION-Transformer).
+# Data: data/lra/lra_release/listops-1000/ (run scripts/fetch_lra_listops.sh).
+
+task: lra_listops
+data_root: data/lra
+batch_size: 32
+max_length: 512
+num_workers: 0
+
+# Transformer / ION-Transformer
+# input_dim set at runtime from vocab_size
+d_model: 64
+nhead: 4
+num_layers: 2
+dim_feedforward: 128
+max_len: 512
+p_dim: 32
+dropout: 0.1
+
+epochs: 20
+lr: 0.0005
+lambda_ind: 0.5
+warmup_epochs: 2
+max_grad_norm: 1.0
+scheduler: cosine
+
+output_type: classification
+num_classes: 10

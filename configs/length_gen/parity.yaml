@@ -1,0 +1,18 @@
+# Parity length-generalization task
+# Inherit base.yaml for seed, device, output_root.
+
+task: parity
+
+# Length splits (no overlap)
+train_min_len: 10
+train_max_len: 20
+test_lengths: [50, 100, 200]
+
+# Data generation
+train_samples: 10000
+val_samples: 1000
+test_samples_per_length: 500
+
+# Training
+batch_size: 32
+num_workers: 0

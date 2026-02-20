@@ -1,0 +1,35 @@
+# Depth-stability experiment on CIFAR-10 (MLP vs universal ION).
+# Same structure as configs/depth/config.yaml (MNIST); merge with base.yaml.
+# Use: run_depth --config-dir configs --dataset cifar (with depth config from depth/cifar.yaml).
+
+task: depth
+dataset: cifar
+data_root: data/cifar10
+train_size: 45000
+val_size: 5000
+download: true
+
+depths: [4, 8, 16, 32]
+models: [mlp, ion]
+
+# CIFAR-10: 32*32*3 = 3072
+input_size: 3072
+hidden_dim: 256
+output_size: 10
+dropout: 0.0
+
+p_dim: 32
+lambda_ind: 0.5
+warmup_epochs: 5
+max_grad_norm: 1.0
+scheduler: cosine
+lambda_ind_deep: 0.15
+depth_threshold_for_lambda: 16
+
+batch_size: 64
+num_workers: 0
+epochs: 30
+
+output_type: classification
+num_classes: 10
+target_accuracy_for_convergence: 0.70

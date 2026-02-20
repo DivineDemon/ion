@@ -1,0 +1,23 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Why ION Helps}
+
+The principle of mathematical induction suggests that if a property holds at an initial index and propagates according to a fixed rule, it holds for all indices. ION instantiates this by learning an invariant map $P$ and a transition rule $F$ so that $p_{t+1} \approx F(p_t, x_t)$ (recurrent) or $p^{(l+1)} \approx F(p^{(l)})$ (layer-depth). By penalizing deviation from this relation via $\mathcal{L}_{\mathrm{ind}}$, the model is encouraged to maintain a \emph{consistent summary} of the hidden state across time or depth. This can yield smoother, more structured representations: the latent trajectory in invariant space is constrained to follow a simple dynamics, which may reduce drift and improve extrapolation to longer sequences or deeper networks. The results in Section~\ref{sec:experiments} support this interpretation---ION retains accuracy at longer sequence lengths, and at moderate depth matches or maintains accuracy (with mitigations and reported limitations for very deep networks); the invariant drift (reported in the experiments) remains low when the inductive loss is active. The mechanistic ablations (Table~\ref{tab:mechanistic_ablations}) show that the learned invariant $P$ is the main driver of performance; full ION and P-only are competitive, while random or frozen $P$ degrades performance.
+
+\subsection{When ION May Not Help}
+
+ION is most natural when the task has a recursive or inductive structure (e.g.\ cumulative sum, parity, Dyck languages) or when depth is large enough that unconstrained propagation degrades performance. In settings with \emph{no clear recursive structure}---e.g.\ purely associative or memoryless mappings---the inductive regularizer may add little or even hinder by constraining the representation unnecessarily. We confirm this with a memoryless task (last-token prediction) in Section~\ref{sec:experiments:failure}: ION does not improve over the baseline, consistent with the view that inductive structure is needed for ION to help. For \emph{very shallow} networks or short sequences, the baseline may already generalize well, and the extra parameters and loss term ($P$, $F$, $\lambda \mathcal{L}_{\mathrm{ind}}$) need not yield a visible gain. Our experiments focus on regimes where length or depth are pushed beyond the training distribution; in those regimes ION is competitive or beneficial when training is stable.
+
+\subsection{Connection to Backprop and Local Learning}
+
+ION does \emph{not} remove or replace backpropagation. All parameters ($\phi$, $P$, $F$, and task head) are trained end-to-end with the same optimizer; $\mathcal{L}_{\mathrm{ind}}$ is simply an auxiliary loss. Thus ION is compatible with standard deep learning practice. An interesting direction for future work is whether the invariant $p$ could support \emph{local} or layer-wise learning rules that approximate the effect of the inductive loss without full backprop through time or depth; we leave that to later study.
+
+\subsection{Practical Use}
+
+ION is best applied in (1) \textbf{length-sensitive} settings: sequence models where test sequences are longer than those seen in training (e.g.\ algorithmic or formal-language tasks), and (2) \textbf{depth-sensitive} settings: feedforward nets where increasing depth hurts accuracy or training stability. In both cases, the same recipe applies: add $P$ and $F$, choose $p_{\mathrm{dim}}$ and $\lambda$ (e.g.\ via the ablations in Section~\ref{sec:experiments}), and train with $\mathcal{L} = \mathcal{L}_{\mathrm{task}} + \lambda \mathcal{L}_{\mathrm{ind}}$. Parameter matching with baselines (Section~\ref{sec:method}) keeps comparisons fair.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+Our evaluation is limited to \emph{synthetic and small-scale} tasks: length generalization on cumulative sum, parity, and Dyck-2, and depth stability on MNIST. We have not yet tested ION on large-scale benchmarks such as Long Range Arena (LRA), CLRS algorithmic reasoning, long-context language models, or depth scaling on CIFAR-10/ImageNet; these are natural directions for future work. ION introduces \emph{extra compute and parameters} for the invariant map $P$ and the rule $F$; although we match total parameter count when comparing to baselines, the forward pass is slightly heavier. Finally, \emph{hyperparameter choice} is required: $p_{\mathrm{dim}}$ (invariant dimension) and $\lambda$ (inductive loss weight) must be set; our ablations suggest reasonable ranges (e.g.\ $\lambda \in [0.3, 0.7]$, moderate $p_{\mathrm{dim}}$), but the best values may depend on task and architecture.

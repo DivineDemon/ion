@@ -1,0 +1,9 @@
+{
+  "sweep": "p_dim",
+  "sweep_value": 4,
+  "task": "mnist",
+  "seed": 123,
+  "metric": "test_accuracy",
+  "metric_value": 0.9785031847133758,
+  "test_loss": 0.10293260330858882
+}

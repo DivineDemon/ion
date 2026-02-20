@@ -1,0 +1,135 @@
+# Paper tests/experiments verification
+
+**Date:** 2025-02-20  
+**Scope:** Verify that all experiments required by the paper are implemented, correctly wired, and correctly referenced in the paper.
+
+---
+
+## 1. Experiments required by the paper
+
+From `sections/experiments.tex`, the appendix, and SANITY_CHECK:
+
+| Experiment | Paper reference | Run script | Data → Artifacts |
+|------------|------------------|------------|-------------------|
+| **Length gen (cumsum, parity, Dyck-2)** | §Length generalization; Table/Fig: cumsum, parity, dyck2 | `run_length_gen` | `results/length_gen/<task>/accuracy_vs_length_table.csv` → `table_length_gen()` → `paper/tables/length_gen_*.tex`; `plot_length_gen()` → `paper/figures/fig_length_gen_*.pdf` |
+| **Length gen (last-token)** | §When ION does not help; Table: last_token | `run_length_gen --all` (includes last_token) | Same pipeline; task `last_token` → `length_gen_last_token.tex` |
+| **Depth stability** | §Depth stability; Table/Fig: depth | `run_depth` | `results/depth/accuracy_vs_depth.csv` (or summary.json) → `table_depth()`, `plot_depth()` |
+| **MNIST** | §MNIST; Table/Fig: mnist loss & accuracy | `run_mnist` | `results/mnist/` → `table_mnist()`, `plot_mnist_curves()` |
+| **Ablations (λ, p_dim)** | §Ablations; Tables/Figs: ablation_lambda_*, ablation_p_dim_* | `run_ablations` | `results/ablations/` → `table_ablations()`, `plot_ablations()` |
+| **Mechanistic ablations** | §Ablations; Table: mechanistic_ablations | `run_mechanistic_ablations` | `results/mechanistic_ablations/<variant>/summary.json` → `table_mechanistic_ablations()` |
+| **Invariant drift** | §Invariant drift; Fig: fig_drift | `run_drift` | `results/drift/drift.json` → `plot_drift()` |
+
+---
+
+## 2. Implementation status
+
+### 2.1 Run scripts
+
+- **`run_length_gen.py`**  
+  - Tasks: cumsum, parity, dyck1, dyck2, last_token (`LENGTH_GEN_TASKS`).  
+  - `--all` runs all tasks × all models (ION, GRU, LSTM).  
+  - `--aggregate-only` builds `accuracy_vs_length_table.csv` per task from per-run data.  
+  - **Verdict:** All length-gen experiments required by the paper are implemented.
+
+- **`run_depth.py`**  
+  - Depths 4, 8, 16, 32; models MLP and ION; writes `accuracy_vs_depth.csv` / `summary.json`.  
+  - **Verdict:** Implemented and matches paper.
+
+- **`run_mnist.py`**  
+  - MLP vs ION; writes `mnist_results.csv` or summary under `results/mnist/`.  
+  - **Verdict:** Implemented and matches paper.
+
+- **`run_ablations.py`**  
+  - Sweeps: `lambda`, `p_dim`; tasks: cumsum, mnist. Writes `*_<value>_<task>_seed_*.json` under `results/ablations/`.  
+  - **Verdict:** Implemented and matches paper.
+
+- **`run_mechanistic_ablations.py`**  
+  - Variants: full_ion, P_only, F_only, random_P on cumsum. Writes `results/mechanistic_ablations/<variant>/summary.json` with `mean_mse`, `std_mse`, `n`.  
+  - **Verdict:** Implemented; `table_mechanistic_ablations()` reads these keys correctly.
+
+- **`run_drift.py`**  
+  - Uses MNIST ION checkpoint; writes `results/drift/drift.json`.  
+  - **Verdict:** Implemented and matches paper (optional figure).
+
+### 2.2 Figure and table generation
+
+- **`run_figures_tables.py`**  
+  Calls `generate_all_plots()` and `generate_all_tables()`.
+
+- **`src/analysis/plots.py`**  
+  - Length-gen: one figure per task in `results/length_gen/` → `fig_length_gen_{cumsum,parity,dyck1,dyck2,last_token}.pdf`.  
+  - Depth, MNIST (loss + accuracy), ablations (λ and p_dim for cumsum + mnist), drift.  
+  - **Verdict:** Produces every figure referenced in the paper.
+
+- **`src/analysis/tables.py`**  
+  - Length-gen: one table per task that has `accuracy_vs_length_table.csv` → `length_gen_{task}.tex` (including last_token).  
+  - Depth, MNIST, ablation_*_cumsum/mnist, mechanistic_ablations.  
+  - **Verdict:** Produces every table referenced in the paper.
+
+---
+
+## 3. Paper references vs artifacts
+
+### 3.1 Tables (experiments.tex)
+
+| Referenced table | File | Produced by |
+|------------------|------|-------------|
+| `tab:length_gen_cumsum` | `tables/length_gen_cumsum.tex` | table_length_gen (task cumsum) |
+| `tab:length_gen_parity` | `tables/length_gen_parity.tex` | table_length_gen (task parity) |
+| `tab:length_gen_dyck2` | `tables/length_gen_dyck2.tex` | table_length_gen (task dyck2) |
+| `tab:depth` | `tables/depth.tex` | table_depth |
+| `tab:mnist` | `tables/mnist.tex` | table_mnist |
+| `tab:ablation_lambda_cumsum` | `tables/ablation_lambda_cumsum.tex` | table_ablations |
+| `tab:ablation_lambda_mnist` | `tables/ablation_lambda_mnist.tex` | table_ablations |
+| `tab:ablation_p_dim_cumsum` | `tables/ablation_p_dim_cumsum.tex` | table_ablations |
+| `tab:ablation_p_dim_mnist` | `tables/ablation_p_dim_mnist.tex` | table_ablations |
+| `tab:mechanistic_ablations` | `tables/mechanistic_ablations.tex` | table_mechanistic_ablations |
+| `tab:length_gen_last_token` | `tables/length_gen_last_token.tex` | table_length_gen (task last_token) |
+
+All referenced tables exist in the repo and are generated by the pipeline. Dyck-1 is implemented and gets `length_gen_dyck1.tex` if data exists; the paper only uses Dyck-2 in the main section, which is intentional.
+
+### 3.2 Figures (experiments.tex)
+
+| Referenced figure | File | Produced by |
+|-------------------|------|-------------|
+| fig_length_gen_cumsum, parity, dyck2 | `figures/fig_length_gen_*.pdf` | plot_length_gen |
+| fig_depth | `figures/fig_depth.pdf` | plot_depth |
+| fig_mnist_loss, fig_mnist_accuracy | `figures/fig_mnist_*.pdf` | plot_mnist_curves |
+| fig_ablation_lambda_*, fig_ablation_p_dim_* | `figures/fig_ablation_*.pdf` | plot_ablations |
+| fig_drift | `figures/fig_drift.pdf` | plot_drift |
+
+Dyck-2 figure is conditionally included with `\IfFileExists`. All other figures are produced by `generate_all_plots()` when the corresponding result data exists.
+
+### 3.3 Conclusion
+
+- Conclusion’s “Tables~\ref{tab:length_gen_cumsum}--\ref{tab:length_gen_dyck2}” refers to the length-gen tables (cumsum through dyck2). Document order is cumsum, parity, dyck2, so the range is correct.
+
+---
+
+## 4. Full pipeline
+
+`scripts/run_all_experiments.sh`:
+
+1. `run_length_gen --all` (includes last_token)  
+2. `run_mnist`  
+3. `run_depth`  
+4. `run_ablations --sweep both`  
+5. `run_mechanistic_ablations`  
+6. `run_drift` (optional)  
+7. `run_length_gen --aggregate-only`  
+8. `run_figures_tables`
+
+So all experiments required by the paper are in the pipeline; last_token is covered by step 1.
+
+---
+
+## 5. Summary
+
+- **Required experiments:** All experiments cited in the paper (length gen including last_token, depth, MNIST, λ/p_dim ablations, mechanistic ablations, drift) are implemented in the corresponding `run_*` scripts and are correctly wired to the figure/table generators.
+- **References:** Every table and figure label used in the paper has a matching artifact produced by `run_figures_tables` (from the appropriate result files). No missing or dangling references.
+- **Implementation correctness:**  
+  - Length-gen: all five tasks (cumsum, parity, dyck1, dyck2, last_token) are supported; paper uses cumsum, parity, dyck2 and last_token.  
+  - Mechanistic ablations: summary keys (`mean_mse`, `std_mse`, `n`) match what `table_mechanistic_ablations()` expects.  
+  - Depth/MNIST/ablations/drift: data paths and formats match the analysis code.
+
+**Note:** `results/EXPERIMENT_STATUS.md` describes *data* completeness (e.g. 5 seeds, full task×model grid). That is separate from this verification; the *code* for all required tests/experiments is present and correctly implemented and referenced in the paper.

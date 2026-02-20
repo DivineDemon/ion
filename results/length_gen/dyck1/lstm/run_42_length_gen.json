@@ -1,0 +1,23 @@
+{
+  "seed": 42,
+  "per_length": {
+    "50": {
+      "test_loss": 0.00014691618434881093,
+      "test_accuracy": 1.0
+    },
+    "100": {
+      "test_loss": 0.0001469187918701209,
+      "test_accuracy": 1.0
+    },
+    "200": {
+      "test_loss": 0.0001469143217036617,
+      "test_accuracy": 1.0
+    }
+  },
+  "lengths": [
+    50,
+    100,
+    200
+  ],
+  "mean_accuracy": 1.0
+}

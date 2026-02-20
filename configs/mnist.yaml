@@ -1,0 +1,25 @@
+# MNIST classification. Merge with base.yaml.
+# Baselines: MLP (model: mlp). Use count_parameters() for matching with ION.
+
+task: mnist
+
+# Data (fixed split; see mnist_loader)
+data_root: data/mnist
+train_size: 50000
+val_size: 10000
+download: true
+
+# Training
+batch_size: 64
+num_workers: 0
+epochs: 20
+lr: 0.001
+lambda_ind: 0.5  # for ION only
+
+# MLP baseline architecture (for depth experiments: vary num_layers; width = hidden_dim)
+model: mlp
+input_size: 784  # 28*28 flattened
+hidden_dim: 256
+num_layers: 4
+output_size: 10
+dropout: 0.0

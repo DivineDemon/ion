@@ -1,0 +1,72 @@
+\section{Method}
+\label{sec:method}
+
+We describe the principle of \emph{inductive invariant consistency} and its instantiation in two settings: recurrent networks (sequence index = time step) and feedforward networks (index = layer depth). In both cases we learn a low-dimensional invariant projection $P$ and a rule $F$ that predicts the next invariant from the current one; we then add an auxiliary loss that encourages the actual next state to satisfy this rule.
+
+\subsection{Recurrent ION}
+\label{sec:method:recurrent}
+
+Let the recurrent state at step $n$ be $h_n \in \mathbb{R}^{d_h}$, and the input at step $n$ be $x_n$. The state evolves according to a parameterized transition $\phi_\theta$ (e.g., a GRU cell):
+\begin{equation}
+\label{eq:recurrent-phi}
+h_{n+1} = \phi_\theta(h_n, x_n).
+\end{equation}
+We introduce a learned \emph{invariant projection} $P_\psi : \mathbb{R}^{d_h} \to \mathbb{R}^{d_p}$ that maps the hidden state to a lower-dimensional quantity $p_n = P_\psi(h_n)$, and a learned \emph{inductive rule} $F_\omega$ that predicts the next invariant from the current invariant and the current input:
+\begin{equation}
+\label{eq:recurrent-F}
+\hat{p}_{n+1} = F_\omega(p_n, x_n).
+\end{equation}
+\begin{sloppypar}
+\noindent
+The principle of inductive consistency is that the actual next invariant $p_{n+1} = P_\psi(h_{n+1})$ should match the rule's prediction $\hat{p}_{n+1}$. We therefore define the \emph{inductive loss} as the mean squared error between these quantities over the sequence:
+\end{sloppypar}
+\begin{equation}
+\label{eq:recurrent-lind}
+\mathcal{L}_{\mathrm{ind}} = \frac{1}{T-1} \sum_{t=0}^{T-2} \big\| P_\psi(h_{t+1}) - F_\omega\big(P_\psi(h_t), x_t\big) \big\|^2.
+\end{equation}
+The total training loss is the task loss (cross-entropy for classification or MSE for regression) plus a weighted inductive term:
+\begin{equation}
+\label{eq:recurrent-total}
+\mathcal{L} = \mathcal{L}_{\mathrm{task}} + \lambda \, \mathcal{L}_{\mathrm{ind}},
+\end{equation}
+where $\lambda \geq 0$ is a hyperparameter. The model is trained end-to-end with backpropagation; the task head consumes the final hidden state $h_T$ (or the last step's representation) to produce the task output. Thus, the recurrent ION augments a standard RNN (e.g., GRU) with the auxiliary objective~\eqref{eq:recurrent-lind} so that the hidden dynamics respect a predictable evolution in the invariant space.
+
+\subsection{Universal ION (layer-depth)}
+\label{sec:method:universal}
+
+The same idea applies when the index is \emph{layer depth} rather than time. Consider a feedforward network with hidden activations $h^{(0)}, h^{(1)}, \ldots, h^{(L)}$, where $h^{(0)}$ is the input (or its embedding) and $h^{(l+1)} = \phi(h^{(l)})$ is produced by layer $l$ (e.g., linear + ReLU). We define the invariant at layer $l$ as $p^{(l)} = P_\psi(h^{(l)})$ and the predicted next invariant as $\hat{p}^{(l+1)} = F_\omega(p^{(l)})$. The rule $F_\omega$ here does not take the raw input at each layer; it only propagates the invariant. The inductive loss is the sum over consecutive layer pairs:
+\begin{equation}
+\label{eq:universal-lind}
+\mathcal{L}_{\mathrm{ind}} = \frac{1}{L-1} \sum_{l=1}^{L-1} \big\| P_\psi(h^{(l+1)}) - F_\omega\big(P_\psi(h^{(l)})\big) \big\|^2.
+\end{equation}
+The total loss is again $\mathcal{L} = \mathcal{L}_{\mathrm{task}} + \lambda \, \mathcal{L}_{\mathrm{ind}}$. This formulation applies to any feedforward net (MLP, or hidden blocks of a CNN); we share a single $P$ and a single $F$ across all layers. By encouraging $P(h^{(l+1)}) \approx F(P(h^{(l)}))$, we bias the network toward representations whose evolution across depth follows a simple rule, which can improve stability and generalization as depth increases.
+
+\subsection{Theoretical perspective}
+\label{sec:method:theory}
+
+Define the \emph{invariant error} at step $t$ (recurrent) or layer $t$ (universal) as
+\begin{equation}
+\varepsilon_t = \big\| P(h_{t+1}) - F(P(h_t), x_t) \big\| \quad \text{(recurrent)} \qquad \text{or} \qquad \varepsilon_t = \big\| P(h^{(t+1)}) - F(P(h^{(t)})) \big\| \quad \text{(universal)}.
+\end{equation}
+Then $\mathcal{L}_{\mathrm{ind}} = \frac{1}{T-1}\sum_{t} \varepsilon_t^2$, so minimizing $\mathcal{L}$ with $\lambda > 0$ directly penalizes the mean squared invariant error. The following proposition links small $\varepsilon_t$ to extrapolation.
+
+\noindent\textbf{Proposition 1} (Invariant consistency and extrapolation).\ \label{prop:extrapolation}
+Suppose the learned $F$ is $L$-Lipschitz in its first argument and the invariant error satisfies $\varepsilon_t \leq \bar{\varepsilon}$ for all $t \leq T_{\mathrm{train}}$. Then for any test length $T_{\mathrm{test}} > T_{\mathrm{train}}$, the predicted invariant trajectory $\hat{p}_{t+1} = F(\hat{p}_t, x_t)$ with $\hat{p}_0 = P(h_0)$ deviates from the actual $p_t = P(h_t)$ by an amount that grows at most as $O(\bar{\varepsilon} \cdot L^{T_{\mathrm{test}}})$ in the worst case; if $L \leq 1$, the deviation is $O(\bar{\varepsilon} \cdot T_{\mathrm{test}})$.
+
+\noindent\textit{Proof sketch.}
+The actual invariant satisfies $p_{t+1} = F(p_t, x_t) + \delta_t$ with $\|\delta_t\| \leq \bar{\varepsilon}$. By the Lipschitz property, $\|\hat{p}_{t+1} - p_{t+1}\| \leq L \|\hat{p}_t - p_t\| + \bar{\varepsilon}$. Unrolling the recurrence gives the stated bound; when $L \leq 1$ the geometric series is bounded by $T_{\mathrm{test}} \bar{\varepsilon}$. \hfill $\square$
+
+Thus, minimizing $\mathcal{L}_{\mathrm{ind}}$ keeps $\bar{\varepsilon}$ small, which in turn controls how much the predicted invariant trajectory drifts at test time. To connect invariant error to \emph{task} error, we add a mild assumption on the task head.
+
+\noindent\textbf{Proposition 2} (Invariant error to task error).\ \label{prop:task-error}
+Assume the setting of Proposition~\ref{prop:extrapolation} with $L \leq 1$, so that $\|p_T - \hat{p}_T\| \leq C \bar{\varepsilon} T_{\mathrm{test}}$ for the final step $T = T_{\mathrm{test}}$ and some constant $C$. Suppose the task output is computed from the final hidden state $h_T$ via a head that is $K$-Lipschitz in the invariant: i.e.\ the task loss (MSE or cross-entropy) is bounded by $K \|p_T - p^*_T\|$ for some reference $p^*_T$ (e.g.\ the invariant of an optimal representation). Then the task error is at most $O(\bar{\varepsilon} \cdot T_{\mathrm{test}})$; in particular, small invariant error $\bar{\varepsilon}$ implies bounded task error at test length $T_{\mathrm{test}}$.
+
+\noindent\textit{Proof sketch.}
+Under the Lipschitz-in-$p$ assumption, task error $\leq K \|p_T - p^*_T\|$. We can bound $\|p_T - p^*_T\| \leq \|p_T - \hat{p}_T\| + \|\hat{p}_T - p^*_T\|$. The first term is $O(\bar{\varepsilon} T_{\mathrm{test}})$ by Proposition~\ref{prop:extrapolation}; the second is fixed by the choice of reference. Thus task error $\leq O(\bar{\varepsilon} T_{\mathrm{test}}) + \mathrm{const}$. \hfill $\square$
+
+This makes the theory actionable: minimizing $\mathcal{L}_{\mathrm{ind}}$ not only controls invariant drift but, under the stated assumption, also bounds the task error at extrapolated lengths. Our ablations on $\lambda$ (Section~\ref{sec:experiments}) are consistent with this: larger $\lambda$ typically yields lower invariant drift and better length generalization up to a point where the task loss is underweighted.
+
+\subsection{Implementation details}
+\label{sec:method:impl}
+
+We implement $P_\psi$ as a linear map from the hidden dimension to $d_p$ followed by $\tanh$; $F_\omega$ is a small MLP (one or two linear + $\tanh$ layers). For recurrent ION, $F$ takes the concatenation of $p_n$ and $x_n$; for universal ION, $F$ takes only $p^{(l)}$. All models are trained with Adam; we use a learning rate of $10^{-3}$ unless stated otherwise, and optionally a cosine annealing schedule over epochs. The inductive weight $\lambda$ is chosen in the range $[0.1, 1.0]$ (typical default $0.5$); ablations in \S\ref{sec:experiments} report sensitivity to $\lambda$ and $d_p$. When comparing ION to baselines (GRU, LSTM, MLP), we match total parameter count: we set ION's hidden size $d_h$ and invariant dimension $d_p$ so that the total number of parameters is within a few percent of the baseline, and we report the counting method (e.g., $\sum_{p \in \mathrm{params}} |p|$). Full hyperparameters for each experiment are given in the appendix and in the released code.
