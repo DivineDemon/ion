@@ -3,6 +3,7 @@ from .baselines import (
     GRUBaseline,
     LSTMBaseline,
     MLPBaseline,
+    TransformerALiBi,
     TransformerBaseline,
     count_parameters,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "GRUBaseline",
     "LSTMBaseline",
     "MLPBaseline",
+    "TransformerALiBi",
     "TransformerBaseline",
     "count_parameters",
     "IONRecurrent",

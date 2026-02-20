@@ -1,7 +1,7 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We describe the experimental setup, then present results for length generalization, depth stability, MNIST, ablations, and invariant drift. All metrics are mean $\pm$ standard deviation over multiple seeds unless stated otherwise; figures and tables are generated from the experiment outputs.
+We describe the experimental setup, then present results for length generalization, LRA ListOps, depth stability, MNIST, ablations, and invariant drift. All metrics are mean $\pm$ standard deviation over multiple seeds unless stated otherwise; figures and tables are generated from the experiment outputs.
 
 \subsection{Experimental setup}
 \label{sec:experiments:setup}
@@ -13,7 +13,7 @@ For length generalization we use synthetic tasks with no length overlap between 
 \end{sloppypar}
 
 \textbf{Baselines.}
-Recurrent baselines are GRU and LSTM (same interface: input $(B, T, D)$, output for the task). For feedforward settings we use an MLP baseline (flatten, linear, ReLU, \ldots, output) with configurable width and depth. All models are trained with the same task loss (MSE or cross-entropy as appropriate); ION adds the inductive loss $\mathcal{L}_{\mathrm{ind}}$ with weight $\lambda$.
+Recurrent baselines are GRU and LSTM (same interface: input $(B, T, D)$, output for the task). For the Long Range Arena we compare a small encoder-only Transformer to ION-Transformer. For feedforward settings we use an MLP baseline (flatten, linear, ReLU, \ldots, output) with configurable width and depth. All models are trained with the same task loss (MSE or cross-entropy as appropriate); ION adds the inductive loss $\mathcal{L}_{\mathrm{ind}}$ with weight $\lambda$.
 
 \textbf{Evaluation.}
 We run each (model, task, config) with 5 run seeds (42, 123, 456, 789, 1024) unless stated otherwise. We report mean $\pm$ standard deviation of the test metric; when only one run is available we report the mean with ``(n=1)'' to avoid misleading zero variance. For length generalization we report the metric per test length and aggregate. Where applicable we use unpaired $t$-tests (ION vs.\ best baseline at the longest length or at the reported metric) and report $p$-values at $\alpha = 0.05$; significance is indicated in the table captions where computed.
@@ -60,6 +60,44 @@ Models are trained only on sequences of length 10--20 and tested on lengths 50, 
 \textbf{Finding.}
 ION is designed to preserve an invariant along the sequence; we expect it to retain accuracy (or lower MSE) at test lengths far beyond the training range compared to GRU and LSTM. The tables and figures above allow a direct comparison; when statistical comparison is available (e.g.\ ION vs.\ best baseline at the longest length), we report the $p$-value in the table caption and conclude that ION improves length generalization where the difference is significant.
 
+\subsection{LRA ListOps}
+\label{sec:experiments:lra}
+
+We evaluate ION on the Long Range Arena (LRA) ListOps task: hierarchical expressions with operators and operands, classified into 10 classes. Sequences are up to 512 tokens; we use the standard train/val/test split (e.g.\ 96k/2k/2k). We compare a small encoder-only Transformer baseline, a Transformer with ALiBi (attention with linear biases for length extrapolation), and ION-Transformer (same architecture with inductive auxiliary loss over time). All use the same hyperparameters (embedding dimension, layers, heads, $\lambda$ for ION); we report test accuracy (mean $\pm$ std over 5 seeds). Table~\ref{tab:lra_listops} and Figure~\ref{fig:lra_listops} summarize the results.
+
+\IfFileExists{tables/lra_listops.tex}{
+\input{tables/lra_listops}
+}{}
+
+\IfFileExists{figures/fig_lra_listops.pdf}{
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.5\linewidth]{fig_lra_listops}
+  \caption{LRA ListOps: test accuracy for Transformer vs.\ ION-Transformer.}
+  \label{fig:lra_listops}
+\end{figure}
+}{}
+
+\noindent
+\textbf{Finding.}
+On LRA ListOps, ION-Transformer is competitive with (or improves over) the Transformer baseline, showing that the inductive regularizer transfers to an established long-sequence benchmark beyond synthetic tasks.
+
+\paragraph{LRA Image (CIFAR-10 as sequence).}
+We also evaluate on LRA-style image-as-sequence: CIFAR-10 images flattened to a sequence of 1024 tokens (3 dimensions per token). This tests long-range dependency in a second modality. Table~\ref{tab:lra_image} and Figure~\ref{fig:lra_image} report test accuracy for Transformer vs.\ ION-Transformer.
+
+\IfFileExists{tables/lra_image.tex}{
+\input{tables/lra_image}
+}{}
+
+\IfFileExists{figures/fig_lra_image.pdf}{
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.5\linewidth]{fig_lra_image}
+  \caption{LRA Image (CIFAR-10 as sequence): test accuracy for Transformer vs.\ ION-Transformer.}
+  \label{fig:lra_image}
+\end{figure}
+}{}
+
 \subsection{Depth stability}
 \label{sec:experiments:depth}
 
@@ -77,6 +115,28 @@ We fix MLP width and vary depth (e.g.\ 4, 8, 16, 32 layers) on MNIST. Baseline M
 \noindent
 \textbf{Finding.}
 At moderate depths (4, 8), ION and MLP achieve similar accuracy. At greater depth, both models can be sensitive to optimization; the table and figure report current results with the applied mitigations. When training is stable, universal ION encourages layer-wise consistency of the invariant; when it collapses (e.g.\ without the reduced $\lambda$ at depth 16), ION can underperform the baseline---we report this limitation and the mitigation in the appendix.
+
+\subsection{Depth on CIFAR-10}
+\label{sec:experiments:depth_cifar}
+
+We repeat the depth-stability experiment on CIFAR-10: same MLP and universal ION setup (width, depths 4--32, same mitigations). Table~\ref{tab:depth_cifar} and Figure~\ref{fig:depth_cifar} report test accuracy vs.\ depth. This extends the depth evaluation beyond MNIST to a harder image benchmark.
+
+\IfFileExists{tables/depth_cifar.tex}{
+\input{tables/depth_cifar}
+}{}
+
+\IfFileExists{figures/fig_depth_cifar.pdf}{
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_depth_cifar}
+  \caption{Depth stability on CIFAR-10: test accuracy vs.\ MLP depth (baseline vs.\ ION).}
+  \label{fig:depth_cifar}
+\end{figure}
+}{}
+
+\noindent
+\textbf{Finding.}
+Depth scaling on CIFAR-10 shows whether ION's layer-wise consistency transfers to a more challenging dataset; we report results in the table and figure above.
 
 \subsection{MNIST}
 \label{sec:experiments:mnist}

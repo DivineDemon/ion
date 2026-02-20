@@ -316,6 +316,139 @@ def table_depth(
     return saved
 
 
+def table_depth_cifar(
+    results_root: Optional[Path] = None,
+    out_csv_dir: Optional[Path] = None,
+    out_tex_dir: Optional[Path] = None,
+) -> list[Path]:
+    """Generate LaTeX and CSV tables for depth experiment on CIFAR-10 (reads results/depth/cifar/)."""
+    root = results_root or _results_root()
+    csv_dir = out_csv_dir or root / "tables"
+    tex_dir = out_tex_dir or _paper_root() / "tables"
+    _ensure_dirs(csv_dir, tex_dir)
+    saved: list[Path] = []
+
+    depth_dir = root / "depth" / "cifar"
+    if not depth_dir.exists():
+        return saved
+
+    csv_src = depth_dir / "accuracy_vs_depth.csv"
+    summary_path = depth_dir / "summary.json"
+    if csv_src.exists():
+        content = csv_src.read_text()
+        csv_out = csv_dir / "depth_cifar_accuracy.csv"
+        csv_out.write_text(content)
+        saved.append(csv_out)
+        lines = content.strip().split("\n")
+        if len(lines) >= 2:
+            header = lines[0]
+            rows = lines[1:]
+            depth_vals = set(r.split(",")[0] for r in rows)
+            try:
+                depths = sorted(depth_vals, key=int)
+            except ValueError:
+                depths = sorted(depth_vals)
+            models = sorted(set(r.split(",")[1] for r in rows))
+            data = {}
+            for r in rows:
+                p = r.split(",")
+                if len(p) >= 4:
+                    d, m, mean, std = p[0], p[1], p[2].strip(), p[3].strip()
+                    try:
+                        n = int(p[4].strip()) if len(p) >= 5 else 2
+                    except (ValueError, IndexError):
+                        n = 2
+                    data[(d, m)] = (mean, std, n)
+            tex_lines = [
+                "\\begin{table}[t]",
+                "\\centering",
+                "\\caption{Depth stability: test accuracy (CIFAR-10).}",
+                "\\label{tab:depth_cifar}",
+                "\\begin{tabular}{l" + "c" * len(models) + "}",
+                "\\toprule",
+                "Depth & " + " & ".join(m.upper() for m in models) + " \\\\",
+                "\\midrule",
+            ]
+            for d in depths:
+                cells = [d]
+                for m in models:
+                    entry = data.get((d, m), ("--", "--", 2))
+                    if len(entry) == 3:
+                        mean, std, n = entry
+                        if n <= 1:
+                            cells.append(f"{mean} (n=1)")
+                        else:
+                            cells.append(f"{mean} $\\pm$ {std}")
+                    else:
+                        mean, std = entry[0], entry[1]
+                        cells.append(f"{mean} $\\pm$ {std}")
+                tex_lines.append(" & ".join(cells) + " \\\\")
+            tex_lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+            tex_path = tex_dir / "depth_cifar.tex"
+            tex_path.write_text("\n".join(tex_lines) + "\n")
+            saved.append(tex_path)
+    elif summary_path.exists():
+        with open(summary_path) as f:
+            data = json.load(f)
+        summaries = data.get("summaries", [])
+        if not summaries:
+            return saved
+        csv_out = csv_dir / "depth_cifar_accuracy.csv"
+        csv_lines = ["depth,model,mean_accuracy,std_accuracy"]
+        for s in summaries:
+            d = s.get("depth", "")
+            m = s.get("model", "")
+            mean = s.get("test_accuracy_mean", s.get("test_accuracy", 0))
+            std = s.get("test_accuracy_std", 0)
+            csv_lines.append(f"{d},{m},{mean:.4f},{std:.4f}")
+        csv_out.write_text("\n".join(csv_lines) + "\n")
+        saved.append(csv_out)
+        depth_set = {s["depth"] for s in summaries}
+        try:
+            depths = sorted(depth_set, key=int)
+        except (ValueError, TypeError):
+            depths = sorted(depth_set)
+        models = sorted({s["model"] for s in summaries})
+        by_key = {}
+        for s in summaries:
+            n = len(s.get("test_accuracies", s.get("seeds", [])))
+            by_key[(s["depth"], s["model"])] = (
+                s.get("test_accuracy_mean", s.get("test_accuracy", 0)),
+                s.get("test_accuracy_std", 0),
+                n,
+            )
+        tex_lines = [
+            "\\begin{table}[t]",
+            "\\centering",
+            "\\caption{Depth stability: test accuracy (CIFAR-10).}",
+            "\\label{tab:depth_cifar}",
+            "\\begin{tabular}{l" + "c" * len(models) + "}",
+            "\\toprule",
+            "Depth & " + " & ".join(m.upper() for m in models) + " \\\\",
+            "\\midrule",
+        ]
+        for d in depths:
+            cells = [str(d)]
+            for m in models:
+                entry = by_key.get((d, m), (0, 0, 2))
+                mean = entry[0]
+                std = entry[1] if len(entry) > 1 else 0
+                n = entry[2] if len(entry) > 2 else 2
+                if isinstance(mean, (int, float)):
+                    if n <= 1:
+                        cells.append(f"{mean:.4f} (n=1)")
+                    else:
+                        cells.append(f"{mean:.4f} $\\pm$ {std:.4f}")
+                else:
+                    cells.append("--")
+            tex_lines.append(" & ".join(cells) + " \\\\")
+        tex_lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+        tex_path = tex_dir / "depth_cifar.tex"
+        tex_path.write_text("\n".join(tex_lines) + "\n")
+        saved.append(tex_path)
+    return saved
+
+
 # ---------------------------------------------------------------------------
 # 3) MNIST: baseline vs ION test accuracy
 # ---------------------------------------------------------------------------
@@ -580,6 +713,134 @@ def table_mechanistic_ablations(
 
 
 # ---------------------------------------------------------------------------
+# 6) LRA ListOps: Transformer vs ION-Transformer test accuracy
+# ---------------------------------------------------------------------------
+
+
+def table_lra(
+    results_root: Optional[Path] = None,
+    out_csv_dir: Optional[Path] = None,
+    out_tex_dir: Optional[Path] = None,
+) -> list[Path]:
+    """Generate LaTeX and CSV table for LRA ListOps (Transformer vs ION-Transformer)."""
+    root = results_root or _results_root()
+    csv_dir = out_csv_dir or root / "tables"
+    tex_dir = out_tex_dir or _paper_root() / "tables"
+    _ensure_dirs(csv_dir, tex_dir)
+    saved: list[Path] = []
+
+    lra_dir = root / "lra" / "listops"
+    if not lra_dir.exists():
+        return saved
+
+    _model_display = {"transformer": "Transformer", "transformer_alibi": "Transformer (ALiBi)", "ion": "ION-Transformer"}
+    rows: list[tuple[str, float, float, int]] = []
+    for model_name in ("transformer", "transformer_alibi", "ion"):
+        summary_path = lra_dir / model_name / "summary.json"
+        if not summary_path.exists():
+            continue
+        with open(summary_path) as f:
+            s = json.load(f)
+        mean_acc = s.get("test_accuracy_mean", 0.0)
+        std_acc = s.get("test_accuracy_std", 0.0)
+        n = len(s.get("seeds", []))
+        display_name = _model_display.get(model_name, model_name.replace("_", " "))
+        rows.append((display_name, mean_acc, std_acc, n))
+
+    if not rows:
+        return saved
+
+    csv_path = csv_dir / "lra_listops.csv"
+    with open(csv_path, "w") as f:
+        f.write("model,test_accuracy_mean,test_accuracy_std,n\n")
+        for display_name, mean_acc, std_acc, n in rows:
+            f.write(f"{display_name},{mean_acc:.6f},{std_acc:.6f},{n}\n")
+    saved.append(csv_path)
+
+    tex_lines = [
+        "\\begin{table}[t]",
+        "\\centering",
+        "\\caption{LRA ListOps: test accuracy (mean $\\pm$ std over seeds).}",
+        "\\label{tab:lra_listops}",
+        "\\begin{tabular}{lc}",
+        "\\toprule",
+        "Model & Test accuracy \\\\",
+        "\\midrule",
+    ]
+    for display_name, mean_acc, std_acc, n in rows:
+        if n <= 1:
+            tex_lines.append(f"{display_name} & ${mean_acc:.4f}$ (n=1) \\\\")
+        else:
+            tex_lines.append(f"{display_name} & ${mean_acc:.4f} \\pm {std_acc:.4f}$ \\\\")
+    tex_lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+    tex_path = tex_dir / "lra_listops.tex"
+    tex_path.write_text("\n".join(tex_lines) + "\n")
+    saved.append(tex_path)
+    return saved
+
+
+def table_lra_image(
+    results_root: Optional[Path] = None,
+    out_csv_dir: Optional[Path] = None,
+    out_tex_dir: Optional[Path] = None,
+) -> list[Path]:
+    """Generate LaTeX and CSV table for LRA Image (CIFAR-10 as sequence): Transformer vs ION-Transformer."""
+    root = results_root or _results_root()
+    csv_dir = out_csv_dir or root / "tables"
+    tex_dir = out_tex_dir or _paper_root() / "tables"
+    _ensure_dirs(csv_dir, tex_dir)
+    saved: list[Path] = []
+
+    lra_dir = root / "lra" / "image"
+    if not lra_dir.exists():
+        return saved
+
+    rows: list[tuple[str, float, float, int]] = []
+    for model_name in ("transformer", "ion"):
+        summary_path = lra_dir / model_name / "summary.json"
+        if not summary_path.exists():
+            continue
+        with open(summary_path) as f:
+            s = json.load(f)
+        mean_acc = s.get("test_accuracy_mean", 0.0)
+        std_acc = s.get("test_accuracy_std", 0.0)
+        n = len(s.get("seeds", []))
+        display_name = "Transformer" if model_name == "transformer" else "ION-Transformer"
+        rows.append((display_name, mean_acc, std_acc, n))
+
+    if not rows:
+        return saved
+
+    csv_path = csv_dir / "lra_image.csv"
+    with open(csv_path, "w") as f:
+        f.write("model,test_accuracy_mean,test_accuracy_std,n\n")
+        for display_name, mean_acc, std_acc, n in rows:
+            f.write(f"{display_name},{mean_acc:.6f},{std_acc:.6f},{n}\n")
+    saved.append(csv_path)
+
+    tex_lines = [
+        "\\begin{table}[t]",
+        "\\centering",
+        "\\caption{LRA Image (CIFAR-10 as sequence): test accuracy (mean $\\pm$ std over seeds).}",
+        "\\label{tab:lra_image}",
+        "\\begin{tabular}{lc}",
+        "\\toprule",
+        "Model & Test accuracy \\\\",
+        "\\midrule",
+    ]
+    for display_name, mean_acc, std_acc, n in rows:
+        if n <= 1:
+            tex_lines.append(f"{display_name} & ${mean_acc:.4f}$ (n=1) \\\\")
+        else:
+            tex_lines.append(f"{display_name} & ${mean_acc:.4f} \\pm {std_acc:.4f}$ \\\\")
+    tex_lines.extend(["\\bottomrule", "\\end{tabular}", "\\end{table}"])
+    tex_path = tex_dir / "lra_image.tex"
+    tex_path.write_text("\n".join(tex_lines) + "\n")
+    saved.append(tex_path)
+    return saved
+
+
+# ---------------------------------------------------------------------------
 # Run all table generators
 # ---------------------------------------------------------------------------
 
@@ -604,6 +865,9 @@ def generate_all_tables(
     all_saved.extend(table_mnist(root, csv_dir, tex_dir))
     all_saved.extend(table_ablations(root, csv_dir, tex_dir))
     all_saved.extend(table_mechanistic_ablations(root, csv_dir, tex_dir))
+    all_saved.extend(table_lra(root, csv_dir, tex_dir))
+    all_saved.extend(table_lra_image(root, csv_dir, tex_dir))
+    all_saved.extend(table_depth_cifar(root, csv_dir, tex_dir))
 
     return all_saved
 

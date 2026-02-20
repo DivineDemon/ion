@@ -17,29 +17,37 @@ echo "Seeds: $SEEDS"
 echo "=== 1. Length generalization (all tasks x models) ==="
 python3 -m src.run_length_gen --all --seeds "$SEEDS" $EPOCHS
 
-echo "=== 2. LRA ListOps (transformer, ion) ==="
+echo "=== 2. LRA ListOps (transformer, transformer_alibi, ion) ==="
 python3 -m src.run_lra --task listops --model transformer --seeds "$SEEDS" $EPOCHS
+python3 -m src.run_lra --task listops --model transformer_alibi --seeds "$SEEDS" $EPOCHS
 python3 -m src.run_lra --task listops --model ion --seeds "$SEEDS" $EPOCHS
+
+echo "=== 2b. LRA Image / CIFAR-10 sequence (transformer, ion) ==="
+python3 -m src.run_lra --task image --model transformer --seeds "$SEEDS" $EPOCHS
+python3 -m src.run_lra --task image --model ion --seeds "$SEEDS" $EPOCHS
 
 echo "=== 3. MNIST (mlp, ion) ==="
 python3 -m src.run_mnist --seeds "$SEEDS" $EPOCHS
 
-echo "=== 3. Depth stability (depths 4,8,16,32; mlp, ion) ==="
-python3 -m src.run_depth --seeds "$SEEDS" $EPOCHS
+echo "=== 4. Depth stability on MNIST (depths 4,8,16,32; mlp, ion) ==="
+python3 -m src.run_depth --dataset mnist --seeds "$SEEDS" $EPOCHS
 
-echo "=== 4. Ablations (lambda, p_dim on cumsum + mnist) ==="
+echo "=== 4b. Depth stability on CIFAR-10 (depths 4,8,16,32; mlp, ion) ==="
+python3 -m src.run_depth --dataset cifar --seeds "$SEEDS" $EPOCHS
+
+echo "=== 5. Ablations (lambda, p_dim on cumsum + mnist) ==="
 python3 -m src.run_ablations --sweep both --seeds "$SEEDS" $EPOCHS
 
-echo "=== 5. Mechanistic ablations (cumsum) ==="
+echo "=== 6. Mechanistic ablations (cumsum) ==="
 python3 -m src.run_mechanistic_ablations --seeds "$SEEDS" $EPOCHS
 
-echo "=== 6. Invariant drift (requires MNIST ION) ==="
+echo "=== 7. Invariant drift (requires MNIST ION) ==="
 python3 -m src.run_drift || true
 
-echo "=== 7. Aggregate length-gen tables ==="
+echo "=== 8. Aggregate length-gen tables ==="
 python3 -m src.run_length_gen --aggregate-only
 
-echo "=== 8. Generate figures and tables ==="
+echo "=== 9. Generate figures and tables ==="
 python3 -m src.run_figures_tables
 
 echo "Done. Results in results/; figures in paper/figures/; tables in paper/tables/."

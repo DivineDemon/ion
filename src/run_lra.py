@@ -24,8 +24,9 @@ if str(_ROOT) not in sys.path:
 import yaml
 import torch
 
-from src.data.lra import get_lra_listops_loaders
+from src.data.lra import get_lra_listops_loaders, get_lra_image_loaders
 from src.models import (
+    TransformerALiBi,
     TransformerBaseline,
     IONTransformer,
     count_parameters,
@@ -78,6 +79,20 @@ def build_transformer(config: dict) -> TransformerBaseline:
     )
 
 
+def build_transformer_alibi(config: dict) -> TransformerALiBi:
+    return TransformerALiBi(
+        input_dim=config["input_dim"],
+        d_model=config["d_model"],
+        nhead=config["nhead"],
+        num_layers=config["num_layers"],
+        dim_feedforward=config["dim_feedforward"],
+        max_len=config["max_len"],
+        output_type=config.get("output_type", "classification"),
+        num_classes=config.get("num_classes", 10),
+        dropout=config.get("dropout", 0.1),
+    )
+
+
 def build_ion_transformer(config: dict) -> IONTransformer:
     return IONTransformer(
         input_dim=config["input_dim"],
@@ -96,6 +111,8 @@ def build_ion_transformer(config: dict) -> IONTransformer:
 def build_model(config: dict, model_name: str) -> torch.nn.Module:
     if model_name == "transformer":
         return build_transformer(config)
+    if model_name == "transformer_alibi":
+        return build_transformer_alibi(config)
     if model_name == "ion":
         return build_ion_transformer(config)
     raise ValueError(f"Unknown model: {model_name}")
@@ -119,15 +136,15 @@ def main() -> None:
         "--task",
         type=str,
         default="listops",
-        choices=["listops"],
-        help="LRA task",
+        choices=["listops", "image"],
+        help="LRA task: listops or image (CIFAR-10 as sequence)",
     )
     parser.add_argument(
         "--model",
         type=str,
         default="ion",
-        choices=["transformer", "ion"],
-        help="Model: transformer (baseline) or ion (ION-Transformer)",
+        choices=["transformer", "transformer_alibi", "ion"],
+        help="Model: transformer, transformer_alibi (ALiBi), or ion (ION-Transformer)",
     )
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument(
@@ -152,7 +169,8 @@ def main() -> None:
         device = get_device()
     print(f"Using device: {device}")
     base_path = args.config_dir / "base.yaml"
-    lra_path = args.config_dir / "lra" / "listops.yaml"
+    task = args.task
+    lra_path = args.config_dir / "lra" / ("listops.yaml" if task == "listops" else "image.yaml")
     if not base_path.exists():
         raise FileNotFoundError(f"Need {base_path}")
     if not lra_path.exists():
@@ -163,14 +181,23 @@ def main() -> None:
     if args.seeds is not None:
         config["seeds"] = [int(s) for s in args.seeds.split(",")]
 
-    train_loader, val_loader, test_loader, vocab_size = get_lra_listops_loaders(
-        data_root=config.get("data_root", "data/lra"),
-        batch_size=config.get("batch_size", 32),
-        max_length=config.get("max_length", 512),
-        num_workers=config.get("num_workers", 0),
-        seed=config.get("seed", 42),
-    )
-    config["input_dim"] = vocab_size
+    if task == "listops":
+        train_loader, val_loader, test_loader, input_dim = get_lra_listops_loaders(
+            data_root=config.get("data_root", "data/lra"),
+            batch_size=config.get("batch_size", 32),
+            max_length=config.get("max_length", 512),
+            num_workers=config.get("num_workers", 0),
+            seed=config.get("seed", 42),
+        )
+    else:
+        train_loader, val_loader, test_loader, input_dim = get_lra_image_loaders(
+            data_root=config.get("data_root", "data/cifar10"),
+            batch_size=config.get("batch_size", 32),
+            max_length=config.get("max_length", 1024),
+            num_workers=config.get("num_workers", 0),
+            seed=config.get("seed", 42),
+        )
+    config["input_dim"] = input_dim
     config["model"] = args.model
     config["task"] = args.task
     config["device"] = str(device)  # so run_training uses selected device

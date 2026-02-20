@@ -11,7 +11,7 @@ Our contributions are as follows:
 \begin{itemize}
   \item We introduce ION, a PMI-inspired training framework that enforces inductive consistency of a learned invariant across time (recurrent) or depth (feedforward), with a single formulation and loss.
   \item We provide a \emph{universal} (layer-depth) variant of ION for feedforward networks and show how to integrate it with standard MLPs.
-  \item We run experiments on length-generalization tasks (cumulative sum, parity, Dyck-2) and on depth stability and MNIST, with parameter-matched baselines (GRU, LSTM, MLP) and 5 seeds per condition.
+  \item We run experiments on length-generalization tasks (cumulative sum, parity, Dyck-2), the Long Range Arena (LRA) ListOps benchmark, depth stability on MNIST and CIFAR-10, and MNIST classification, with parameter-matched baselines (GRU, LSTM, MLP, and Transformer for LRA) and 5 seeds per condition.
   \item We report results demonstrating competitive length generalization and maintained or matched accuracy at moderate depth with ION (with $p$-values where applicable), plus ablations on $\lambda$ and $p_{\mathrm{dim}}$ and analysis of invariant drift.
 \end{itemize}
 The rest of the paper is organized as follows: \S\ref{sec:related} reviews related work; \S\ref{sec:method} formalizes recurrent and universal ION; \S\ref{sec:experiments} presents experiments and results; \S\ref{sec:discussion} and \S\ref{sec:conclusion} discuss limitations and conclude.

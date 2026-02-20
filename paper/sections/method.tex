@@ -66,6 +66,9 @@ Under the Lipschitz-in-$p$ assumption, task error $\leq K \|p_T - p^*_T\|$. We c
 
 This makes the theory actionable: minimizing $\mathcal{L}_{\mathrm{ind}}$ not only controls invariant drift but, under the stated assumption, also bounds the task error at extrapolated lengths. Our ablations on $\lambda$ (Section~\ref{sec:experiments}) are consistent with this: larger $\lambda$ typically yields lower invariant drift and better length generalization up to a point where the task loss is underweighted.
 
+\paragraph{Stability with respect to depth.}
+For universal ION, the index is layer $l \in \{1, \ldots, L\}$. The same reasoning applies when extrapolating in \emph{depth}: if at each layer the invariant error $\varepsilon_l = \|P(h^{(l+1)}) - F(P(h^{(l)}))\|$ is bounded by $\bar{\varepsilon}$, and $F$ is $L$-Lipschitz in its argument, then the predicted invariant $\hat{p}^{(l)}$ (defined by $\hat{p}^{(l+1)} = F(\hat{p}^{(l)})$ with $\hat{p}^{(1)} = P(h^{(1)})$) satisfies $\|\hat{p}^{(L)} - p^{(L)}\| \leq C \bar{\varepsilon} L$ when the Lipschitz constant of $F$ is at most $1$ (analogous to Proposition~\ref{prop:extrapolation} with time replaced by layer index). Thus, controlling $\mathcal{L}_{\mathrm{ind}}$ keeps the representation stable as depth increases: the invariant at the output layer does not drift arbitrarily far from the trajectory defined by $F$. This supports the empirical observation that ION can maintain accuracy at moderate depth (Section~\ref{sec:experiments:depth}); when $F$ is not contractive ($L > 1$), error can grow exponentially in depth, which matches the need for mitigations (e.g.\ reduced $\lambda$) at very deep networks.
+
 \subsection{Implementation details}
 \label{sec:method:impl}
 

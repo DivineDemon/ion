@@ -1,0 +1,26 @@
+# LRA Image: CIFAR-10 as flattened sequence (1024 tokens, 3 dims per token).
+# Merge with base.yaml. Same models as ListOps: transformer, ion.
+
+task: lra_image
+data_root: data/cifar10
+batch_size: 32
+max_length: 1024
+num_workers: 0
+
+d_model: 64
+nhead: 4
+num_layers: 2
+dim_feedforward: 128
+max_len: 1024
+p_dim: 32
+dropout: 0.1
+
+epochs: 20
+lr: 0.0005
+lambda_ind: 0.5
+warmup_epochs: 2
+max_grad_norm: 1.0
+scheduler: cosine
+
+output_type: classification
+num_classes: 10

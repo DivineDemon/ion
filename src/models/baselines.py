@@ -214,6 +214,80 @@ class TransformerBaseline(nn.Module):
 
 
 # ---------------------------------------------------------------------------
+# Transformer with ALiBi (Attention with Linear Biases) for length extrapolation
+# ---------------------------------------------------------------------------
+
+
+def _alibi_mask(seq_len: int, n_heads: int, device: torch.device) -> torch.Tensor:
+    """ALiBi: bias matrix (seq_len, seq_len) added to attention scores. Uses mean slope across heads."""
+    # Per-head slopes: 2^(-8/n), 2^(-16/n), ... (Press et al.)
+    slopes = torch.tensor([2 ** (-8 * (i + 1) / n_heads) for i in range(n_heads)], device=device, dtype=torch.float32)
+    slope = slopes.mean().item()
+    # bias[i,j] = -slope * |i - j|
+    i = torch.arange(seq_len, device=device, dtype=torch.float32)
+    j = torch.arange(seq_len, device=device, dtype=torch.float32)
+    dist = (i.unsqueeze(1) - j.unsqueeze(0)).abs()
+    mask = -slope * dist
+    return mask  # (T, T)
+
+
+class TransformerALiBi(nn.Module):
+    """
+    Encoder-only Transformer with ALiBi (no learned positional embedding).
+    Same interface as TransformerBaseline; uses attention bias for length extrapolation.
+    """
+
+    def __init__(
+        self,
+        input_dim: int,
+        d_model: int,
+        nhead: int,
+        num_layers: int,
+        dim_feedforward: int,
+        max_len: int = 512,
+        output_type: Literal["classification", "regression"] = "classification",
+        num_classes: Optional[int] = None,
+        dropout: float = 0.1,
+    ):
+        super().__init__()
+        self.d_model = d_model
+        self.nhead = nhead
+        self.max_len = max_len
+        self.output_type = output_type
+        self.num_classes = num_classes
+
+        self.input_proj = nn.Linear(input_dim, d_model)
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=d_model,
+            nhead=nhead,
+            dim_feedforward=dim_feedforward,
+            dropout=dropout,
+            activation="relu",
+            batch_first=True,
+            norm_first=False,
+        )
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+
+        if output_type == "classification":
+            if num_classes is None:
+                raise ValueError("num_classes required for classification")
+            self.head = nn.Linear(d_model, num_classes)
+        else:
+            self.head = nn.Linear(d_model, 1)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        B, T, _ = x.shape
+        x = self.input_proj(x)
+        alibi = _alibi_mask(T, self.nhead, x.device)
+        x = self.encoder(x, mask=alibi)
+        last_h = x[:, -1, :]
+        out = self.head(last_h)
+        if self.output_type == "regression":
+            return out.squeeze(-1)
+        return out
+
+
+# ---------------------------------------------------------------------------
 # MLP baseline (for MNIST / depth experiments)
 # ---------------------------------------------------------------------------
 

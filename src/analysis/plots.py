@@ -221,6 +221,74 @@ def plot_depth(
     return path
 
 
+def plot_depth_cifar(
+    results_root: Optional[Path] = None,
+    output_dir: Optional[Path] = None,
+    fig_format: str = "pdf",
+) -> Optional[Path]:
+    """Plot test accuracy vs depth for MLP vs ION on CIFAR-10 (reads results/depth/cifar/)."""
+    root = results_root or _results_root()
+    out = output_dir or _figures_dir()
+    depth_dir = root / "depth" / "cifar"
+    if not depth_dir.exists():
+        return None
+
+    csv_path = depth_dir / "accuracy_vs_depth.csv"
+    summary_path = depth_dir / "summary.json"
+    if csv_path.exists():
+        df = pd.read_csv(csv_path)
+        if df.empty:
+            return None
+        depths = sorted(df["depth"].unique())
+        models = df["model"].unique().tolist()
+    else:
+        if not summary_path.exists():
+            return None
+        with open(summary_path) as f:
+            data = json.load(f)
+        summaries = data.get("summaries", [])
+        if not summaries:
+            return None
+        depths = sorted({s["depth"] for s in summaries})
+        models = sorted({s["model"] for s in summaries})
+        df = pd.DataFrame(summaries)
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    colors = {"mlp": "C0", "ion": "C1"}
+    for model in models:
+        if "depth" in df.columns and "model" in df.columns:
+            sub = df[df["model"] == model].sort_values("depth")
+            x = sub["depth"].values
+            mean_col = "mean_accuracy" if "mean_accuracy" in sub.columns else "test_accuracy_mean"
+            std_col = "std_accuracy" if "std_accuracy" in sub.columns else "test_accuracy_std"
+            if mean_col not in sub.columns and "test_accuracy_mean" in df.columns:
+                mean_col = "test_accuracy_mean"
+                std_col = "test_accuracy_std"
+            y = sub[mean_col].values
+            yerr = sub[std_col].values if std_col in sub.columns else np.zeros_like(y)
+        else:
+            with open(summary_path) as f:
+                data = json.load(f)
+            sub = [s for s in data.get("summaries", []) if s["model"] == model]
+            sub = sorted(sub, key=lambda s: s["depth"])
+            x = [s["depth"] for s in sub]
+            y = [s.get("test_accuracy_mean", s.get("test_accuracy", 0)) for s in sub]
+            yerr = [s.get("test_accuracy_std", 0) for s in sub]
+        ax.errorbar(
+            x, y, yerr=yerr, marker="o", label=model, color=colors.get(model, "C2")
+        )
+    ax.set_xlabel("Depth")
+    ax.set_ylabel("Test accuracy")
+    ax.set_title("Depth stability (CIFAR-10)")
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    fig.tight_layout()
+    path = out / f"fig_depth_cifar.{fig_format}"
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+    return path
+
+
 # ---------------------------------------------------------------------------
 # 3) MNIST: train/val loss or accuracy over epochs (baseline vs ION)
 # ---------------------------------------------------------------------------
@@ -457,6 +525,107 @@ def plot_drift(
 
 
 # ---------------------------------------------------------------------------
+# 6) LRA ListOps: bar plot Transformer vs ION-Transformer test accuracy
+# ---------------------------------------------------------------------------
+
+
+def plot_lra(
+    results_root: Optional[Path] = None,
+    output_dir: Optional[Path] = None,
+    fig_format: str = "pdf",
+) -> list[Path]:
+    """Bar plot of LRA ListOps test accuracy (Transformer vs ION-Transformer)."""
+    root = results_root or _results_root()
+    out = output_dir or _figures_dir()
+    saved: list[Path] = []
+
+    lra_dir = root / "lra" / "listops"
+    if not lra_dir.exists():
+        return saved
+
+    _model_display = {"transformer": "Transformer", "transformer_alibi": "Transformer (ALiBi)", "ion": "ION-Transformer"}
+    names: list[str] = []
+    means: list[float] = []
+    stds: list[float] = []
+    for model_name in ("transformer", "transformer_alibi", "ion"):
+        summary_path = lra_dir / model_name / "summary.json"
+        if not summary_path.exists():
+            continue
+        with open(summary_path) as f:
+            s = json.load(f)
+        names.append(_model_display.get(model_name, model_name.replace("_", " ")))
+        means.append(s.get("test_accuracy_mean", 0.0))
+        stds.append(s.get("test_accuracy_std", 0.0))
+
+    if not names:
+        return saved
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+    x = np.arange(len(names))
+    colors = ["#1f77b4", "#2ca02c", "#ff7f0e"][: len(names)]
+    bars = ax.bar(x, means, yerr=stds, capsize=5, color=colors, edgecolor="black", linewidth=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(names)
+    ax.set_ylabel("Test accuracy")
+    ax.set_title("LRA ListOps")
+    ax.set_ylim(0, 1.05)
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    path = out / f"fig_lra_listops.{fig_format}"
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+    saved.append(path)
+    return saved
+
+
+def plot_lra_image(
+    results_root: Optional[Path] = None,
+    output_dir: Optional[Path] = None,
+    fig_format: str = "pdf",
+) -> list[Path]:
+    """Bar plot of LRA Image (CIFAR-10 sequence) test accuracy."""
+    root = results_root or _results_root()
+    out = output_dir or _figures_dir()
+    saved: list[Path] = []
+
+    lra_dir = root / "lra" / "image"
+    if not lra_dir.exists():
+        return saved
+
+    names: list[str] = []
+    means: list[float] = []
+    stds: list[float] = []
+    for model_name in ("transformer", "ion"):
+        summary_path = lra_dir / model_name / "summary.json"
+        if not summary_path.exists():
+            continue
+        with open(summary_path) as f:
+            s = json.load(f)
+        names.append("Transformer" if model_name == "transformer" else "ION-Transformer")
+        means.append(s.get("test_accuracy_mean", 0.0))
+        stds.append(s.get("test_accuracy_std", 0.0))
+
+    if not names:
+        return saved
+
+    fig, ax = plt.subplots(figsize=(5, 4))
+    x = np.arange(len(names))
+    ax.bar(x, means, yerr=stds, capsize=5, color=["#1f77b4", "#ff7f0e"], edgecolor="black", linewidth=0.8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(names)
+    ax.set_ylabel("Test accuracy")
+    ax.set_title("LRA Image (CIFAR-10 sequence)")
+    ax.set_ylim(0, 1.05)
+    ax.grid(axis="y", alpha=0.3)
+    plt.tight_layout()
+    path = out / f"fig_lra_image.{fig_format}"
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+    saved.append(path)
+    return saved
+
+
+# ---------------------------------------------------------------------------
 # Run all plot generators
 # ---------------------------------------------------------------------------
 
@@ -477,10 +646,15 @@ def generate_all_plots(
     # 1) Length generalization (one fig per task)
     all_saved.extend(plot_length_gen(root, output_dir=out, fig_format=fig_format))
 
-    # 2) Depth
+    # 2) Depth (MNIST)
     p = plot_depth(root, output_dir=out, fig_format=fig_format)
     if p is not None:
         all_saved.append(p)
+
+    # 2b) Depth (CIFAR-10)
+    p_cifar = plot_depth_cifar(root, output_dir=out, fig_format=fig_format)
+    if p_cifar is not None:
+        all_saved.append(p_cifar)
 
     # 3) MNIST curves
     all_saved.extend(plot_mnist_curves(root, output_dir=out, fig_format=fig_format))
@@ -490,6 +664,10 @@ def generate_all_plots(
 
     # 5) Drift (if data available)
     all_saved.extend(plot_drift(results_root=root, output_dir=out, fig_format=fig_format))
+
+    # 6) LRA ListOps and LRA Image
+    all_saved.extend(plot_lra(root, output_dir=out, fig_format=fig_format))
+    all_saved.extend(plot_lra_image(root, output_dir=out, fig_format=fig_format))
 
     return all_saved
 

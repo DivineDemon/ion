@@ -91,7 +91,7 @@ python -m src.run_mnist --epochs 5 --seeds 42
 
 ### Full experiment suite
 
-Runs length-gen, depth, MNIST, ablations, mechanistic ablations, drift, then aggregates and generates figures (several hours; GPU recommended):
+Runs length-gen, LRA ListOps, depth (MNIST and CIFAR-10), MNIST, ablations, mechanistic ablations, drift, then aggregates and generates figures (several hours; GPU recommended):
 
 ```bash
 ./scripts/run_all_experiments.sh
